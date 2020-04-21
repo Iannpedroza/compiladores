@@ -47,9 +47,9 @@ public class TabelaDeSimbolos {
    public final byte ENDELSE = 41;
    public final byte COMPARA = 42;            
 	
-   public TabelaSimbolo() {
+   public TabelaDeSimbolos() {
       tabela.put("if", new Simbolo(IF,"if", ++endereco));
-      tabela.put("int", new Simbolo(INTEGER,"int", ++endereco));
+      tabela.put("int", new Simbolo(INT,"int", ++endereco));
       tabela.put("writeln", new Simbolo(WRITELN,"writeln", ++endereco));
       tabela.put("write", new Simbolo(WRITE,"write", ++endereco));
       tabela.put("readln", new Simbolo(READLN,"readln", ++endereco));
@@ -60,18 +60,18 @@ public class TabelaDeSimbolos {
       tabela.put("]", new Simbolo(FCOL,"]", ++endereco));
       tabela.put("(", new Simbolo(APAR,"(", ++endereco));
       tabela.put(")", new Simbolo(FPAR,")", ++endereco));
-      tabela.put(";", new Simbolo(PV,";", ++endereco));
+      tabela.put(";", new Simbolo(PONTOVIRGULA,";", ++endereco));
       tabela.put("<-", new Simbolo(ATT,"<-", ++endereco));
       tabela.put(">", new Simbolo(MAIOR,">",++endereco));
       tabela.put("<", new Simbolo(MENOR,"<", ++endereco));
       tabela.put(">=", new Simbolo(MAIORIG,">=", ++endereco));
       tabela.put("<=", new Simbolo(MENORIG,"<=", ++endereco));
       tabela.put("!=", new Simbolo(DIFF,"!=", ++endereco));
-      tabela.put(",", new Simbolo(VIR,",", ++endereco));
-      tabela.put("+", new Simbolo(ADD,"+", ++endereco));
+      tabela.put(",", new Simbolo(VIRGULA,",", ++endereco));
+      tabela.put("+", new Simbolo(SUM,"+", ++endereco));
       tabela.put("-", new Simbolo(SUB,"-", ++endereco));
       tabela.put("/", new Simbolo(DIV,"/", ++endereco));
-      tabela.put("*", new Simbolo(MUL,"*", ++endereco));
+      tabela.put("*", new Simbolo(MULT,"*", ++endereco));
       tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++endereco));   
       tabela.put("'", new Simbolo(APOST,"'", ++endereco));   
       tabela.put("\"", new Simbolo(ASPAS,"\"", ++endereco));
@@ -117,9 +117,9 @@ public class TabelaDeSimbolos {
     }
 
    public static void main(String[] args){
-       TabelaSimbolo tbl = new TabelaSimbolo();
+       TabelaDeSimbolos tbl = new TabelaDeSimbolos();
 
-      /* System.out.println(tbl.pesquisa("if"));
+       System.out.println(tbl.pesquisa("if"));
        System.out.println(tbl.pesquisa("FI"));
        System.out.println(tbl.pesquisa("iF"));
        System.out.println(tbl.buscaSimbolo("and").getLexema());
@@ -130,8 +130,92 @@ public class TabelaDeSimbolos {
        System.out.println(tbl.pesquisa("boolean"));
        System.out.println(tbl.pesquisa("teste"));
        tbl.inserirID("TEstE");
-       System.out.println(tbl.pesquisa("teste"));*/
+       System.out.println(tbl.pesquisa("teste"));
     }
 
 
 }
+
+class Simbolo {
+    private String lexema = "";
+    private byte token;
+    private String classe = "";
+    private String tipo = "";
+    private int tamanho = 0;
+    private int endereco;
+    
+    public Simbolo(){
+       this.token = -1;
+    }
+       
+    public Simbolo(byte token, String lexema, int endereco){
+       this.lexema = lexema;
+       this.token = token;
+       this.endereco = endereco;
+    }
+     
+    public Simbolo(byte token, String lexema,int endereco, String tipo){
+       this.token = token;
+       this.lexema = lexema;
+       this.tipo = tipo;
+       this.endereco = endereco;
+    }
+    
+    public Simbolo(byte token,String lexema, int endereco, String tipo,String classe, int tamanho) {
+       this.token = token;
+       this.lexema = lexema;
+       this.classe = classe;
+       this.tipo = tipo;
+       this.endereco = endereco;
+       this.tamanho = tamanho;
+    }
+ 
+    public byte getToken(){
+       return token;
+    }
+     
+    public int getEnd(){
+       return endereco;
+    }
+     
+    public String getLexema(){
+       return lexema;
+    }
+ 
+    public String getTipo() {
+       return tipo;
+    }
+ 
+    public void setTipo(String tipo) {
+       this.tipo = tipo;
+    }
+    
+    public void setToken(byte token) {
+       this.token = token;
+    }
+    
+    public String getClasse() {
+       return classe;
+    }
+ 
+    public void setClasse(String classe) {
+       this.classe = classe;
+    }
+ 
+    public int getEndereco() {
+       return endereco;
+    }
+ 
+    public void setEndereco(int endereco) {
+       this.endereco = endereco;
+    }
+    
+    public int getTamanho() {
+       return tamanho;
+    }
+ 
+    public void setTamanho(int tamanho) {
+       this.tamanho = tamanho;
+    }
+ 
+ }
