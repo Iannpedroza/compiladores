@@ -1,4 +1,5 @@
 import java.util.HashMap;
+
 public class TabelaDeSimbolos {
    public HashMap<String, Simbolo> tabela = new HashMap<>();
    public static int endereco = -1;
