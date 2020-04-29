@@ -11,42 +11,36 @@ public class TabelaDeSimbolos {
    public final byte WRITE = 4;
    public final byte READLN = 5;
    public final byte ELSE = 6;
-   public final byte ACHAVE = 7; // {
-   public final byte FCHAVE = 8; // }
-   public final byte ACOL = 9; // [
-   public final byte FCOL = 10; // ]
-   public final byte APAR = 11; // (
-   public final byte FPAR = 12; // )
-   public final byte PONTOVIRGULA = 13;
-   public final byte ATT = 14;
-   public final byte OR = 15;
-   public final byte MAIOR = 16;
-   public final byte MENOR = 17;
-   public final byte MAIORIG = 18;
-   public final byte MENORIG = 19;
-   public final byte DIFF = 20;
-   public final byte VIRGULA = 21;
-   public final byte SUM = 22;
-   public final byte SUB = 23;
-   public final byte DIV = 24;
-   public final byte MULT = 25;
-   public final byte TRUE = 26;
-   public final byte FALSE = 27;
-   public final byte BOOLEAN = 28;
-   public final byte ASPAS = 29;
-   public final byte APOST = 30;
-   public final byte ID = 31;
-   public final byte VALORCONST = 32;
-   public final byte FINAL = 33;
-   public final byte STRING = 34;
-   public final byte WHILE = 35;
-   public final byte AND = 36;
-   public final byte NEG = 37;
-   public final byte BEGIN = 38;
-   public final byte ENDWHILE = 39;
-   public final byte ENDIF = 40;
-   public final byte ENDELSE = 41;
-   public final byte COMPARA = 42;            
+   public final byte APAR = 7; // (
+   public final byte FPAR = 8; // )
+   public final byte PONTOVIRGULA = 9;
+   public final byte ATT = 10;
+   public final byte OR = 11;
+   public final byte MAIOR = 12;
+   public final byte MENOR = 13;
+   public final byte MAIORIG = 14;
+   public final byte MENORIG = 15;
+   public final byte DIFF = 16;
+   public final byte VIRGULA = 17;
+   public final byte SUM = 18;
+   public final byte SUB = 19;
+   public final byte DIV = 20;
+   public final byte MULT = 21;
+   public final byte TRUE = 22;
+   public final byte FALSE = 23;
+   public final byte BOOLEAN = 24;
+   public final byte ID = 25;
+   public final byte VALORCONST = 26;
+   public final byte FINAL = 27;
+   public final byte STRING = 28;
+   public final byte WHILE = 29;
+   public final byte AND = 30;
+   public final byte NEG = 31;
+   public final byte BEGIN = 32;
+   public final byte ENDWHILE = 33;
+   public final byte ENDIF = 34;
+   public final byte ENDELSE = 35;
+   public final byte COMPARA = 36;            
 	
    public TabelaDeSimbolos() {
       tabela.put("if", new Simbolo(IF,"if", ++endereco));
@@ -55,10 +49,6 @@ public class TabelaDeSimbolos {
       tabela.put("write", new Simbolo(WRITE,"write", ++endereco));
       tabela.put("readln", new Simbolo(READLN,"readln", ++endereco));
       tabela.put("else", new Simbolo(ELSE,"else", ++endereco));
-      tabela.put("{", new Simbolo(ACHAVE,"{", ++endereco));
-      tabela.put("}", new Simbolo(FCHAVE,"}", ++endereco));
-      tabela.put("[", new Simbolo(ACOL,"[", ++endereco));
-      tabela.put("]", new Simbolo(FCOL,"]", ++endereco));
       tabela.put("(", new Simbolo(APAR,"(", ++endereco));
       tabela.put(")", new Simbolo(FPAR,")", ++endereco));
       tabela.put(";", new Simbolo(PONTOVIRGULA,";", ++endereco));
@@ -74,8 +64,6 @@ public class TabelaDeSimbolos {
       tabela.put("/", new Simbolo(DIV,"/", ++endereco));
       tabela.put("*", new Simbolo(MULT,"*", ++endereco));
       tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++endereco));   
-      tabela.put("'", new Simbolo(APOST,"'", ++endereco));   
-      tabela.put("\"", new Simbolo(ASPAS,"\"", ++endereco));
       tabela.put("final", new Simbolo(FINAL,"final", ++endereco)); 
       tabela.put("string", new Simbolo(STRING,"string", ++endereco));
       tabela.put("while", new Simbolo(WHILE,"while", ++endereco));
