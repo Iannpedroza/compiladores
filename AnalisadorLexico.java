@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.List;
 import java.io.*;
-
+//dasdsa
 public class AnalisadorLexico {
    public TabelaDeSimbolo simbolos;
    public AnalisadorLexico(TabelaDeSimbolo tabela){
