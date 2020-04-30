@@ -66,7 +66,7 @@ public class AnalisadorLexico {
                } else if(c == '&'){
                   lexema += c;
                   // estadoInicial = (criar estado de acordo com o nosso automato)
-               }
+               } 
                /*
                * else if (c == '=') { // Possui 2 variacoes: '=' e '==', vai para o proximo
                * estado para decidir qual o // token lexema += c; estadoInicial = 4; }
@@ -304,8 +304,8 @@ public class AnalisadorLexico {
       simb = null;
       if (!ehEOF) {
          // Seleciona o simbolo da tabela de simbolos caso ele ja esteja na tabela
-         if (simbolos.tabela.get(lexema.toLowerCase()) != null) {
-            simb = simbolos.tabela.get(lexema.toLowerCase());
+         if (simbolos.tabela.get(lexema != null) {
+            simb = simbolos.tabela.get(lexema);
          } else if (isLetra(lexema.charAt(0)) || lexema.charAt(0) == '.' || lexema.charAt(0) == '_') {
             // Insere um novo ID na tabela de simbolos
             simb = simbolos.inserirID(lexema);
