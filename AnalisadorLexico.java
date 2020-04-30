@@ -20,14 +20,14 @@ public class AnalisadorLexico {
    
    Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo) throws Exception {
       //BufferedReader arquivo2 = null;
-      int stateI = 0;
-      int stateF = 1;
+      int estadoInicial = 0;
+      int estadoFinal = 1;
       lexema = "";
       // int pos = 0;
       // c = (char)arquivo.read();
       // while(c != '\n' || c != '\r'){
-      while (stateI != stateF) {
-         switch (stateI) {
+      while (estadoInicial != estadoFinal) {
+         switch (estadoInicial) {
             case 0:
                if (devolucao == false) {
                   c = (char) arquivo.read();
@@ -43,54 +43,54 @@ public class AnalisadorLexico {
                // LÃƒÂª os tokens que possuem somente 1 caractere e vao para o estado final
                // Nada ÃƒÂ© devolvido
                   lexema += c;
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = false;
                } else if (c == 32 || c == 11 || c == 8 || c == 13 || c == 9) {
                // lendo "lixo" espaÃƒÂ§o em branco, enter tabs vertical e horizontal
-                  stateI = 0;
+                  estadoInicial = 0;
                } else if (c == '/') {
                   lexema += c;
-                  stateI = 14;
+                  estadoInicial = 14;
                } else if (c == '>') {
                // Possui 2 variacoes: '>' e '>=', vai para o proximo estado para decidir qual o
                // token
                   lexema += c;
-                  stateI = 2;
+                  estadoInicial = 2;
                } else if (c == '<') {
                // Possui 3 variacoes: '<', '<>' e '<=', vai para o proximo estado para decidir
                // qual o token
                   lexema += c;
-                  stateI = 3;
+                  estadoInicial = 3;
                }
                /*
                * else if (c == '=') { // Possui 2 variacoes: '=' e '==', vai para o proximo
-               * estado para decidir qual o // token lexema += c; stateI = 4; }
+               * estado para decidir qual o // token lexema += c; estadoInicial = 4; }
                */
                else if (c == '\'') {
                // Constante do tipo 'constante'
                   lexema += c;
-                  stateI = 11;
+                  estadoInicial = 11;
                } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
                // Constante do tipo "constante"
                   lexema += c;
-                  stateI = 12;
+                  estadoInicial = 12;
                } else if (isLetra(c) || c == '.' || c == '_') {
                // Criacao de um id ou token que possui lexema constituido por letras, '.' ou
                // '_'
                   lexema += c;
-                  stateI = 5;
+                  estadoInicial = 5;
                } else if (isDigito(c)) {
                   if (c == '0') {
                   // Constante do tipo 0x(hexa)(hexa)
                      lexema += c;
-                     stateI = 7;
+                     estadoInicial = 7;
                   } else {
                   // Numero nao comecado por 0
                      lexema += c;
-                     stateI = 10;
+                     estadoInicial = 10;
                   }
                } else if (c == 65535) {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   lexema += c;
                   ehEOF = true;
                   devolve = false;
@@ -107,10 +107,10 @@ public class AnalisadorLexico {
             
                if (c == '=') {
                   lexema += c;
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = false;
                } else {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = true;
                   devolucao = true;
                }
@@ -121,14 +121,14 @@ public class AnalisadorLexico {
             
                if (c == '=') {
                   lexema += c;
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = false;
                } else if (c == '>') {
                   lexema += c;
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = false;
                } else {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   this.devolve = true;
                   devolucao = true;
                }
@@ -139,10 +139,10 @@ public class AnalisadorLexico {
                
                if (c == '\'') {
                   lexema += c;
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = false;
                } else {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   this.devolve = true;
                   devolucao = true;
                }
@@ -158,9 +158,9 @@ public class AnalisadorLexico {
                // Vai para o estado 6 caso seja digito ou letra (minimo um digito ou letra no
                // id)
                   lexema += c;
-                  stateI = 6;
+                  estadoInicial = 6;
                } else if (!isLetra(c) && !isDigito(c) && c != '.' && c != '_') {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolucao = true;
                   devolve = true;
                }
@@ -172,7 +172,7 @@ public class AnalisadorLexico {
                if (isDigito(c) || isLetra(c) || c == '.' || c == '_') {
                   lexema += c;
                } else {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolucao = true;
                   devolve = true;
                }
@@ -183,12 +183,12 @@ public class AnalisadorLexico {
             
                if (c == 'x' || c == 'X') {
                   lexema += c;
-                  stateI = 8;
+                  estadoInicial = 8;
                } else if (isDigito(c)) {
                   lexema += c;
-                  stateI = 10;
+                  estadoInicial = 10;
                } else {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = true;
                   devolucao = true;
                }
@@ -200,7 +200,7 @@ public class AnalisadorLexico {
             // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
                if (Character.digit(c, 16) >= 0) {
                   lexema += c;
-                  stateI = 9;
+                  estadoInicial = 9;
                } else {
                   printErrorHexa();
                }
@@ -212,7 +212,7 @@ public class AnalisadorLexico {
             // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
                if (Character.digit(c, 16) >= 0) {
                   lexema += c;
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = false;
                }else {
                   printErrorHexa();
@@ -225,7 +225,7 @@ public class AnalisadorLexico {
                if (isDigito(c)) {
                   lexema += c;
                } else {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = true;
                   devolucao = true;
                }
@@ -236,7 +236,7 @@ public class AnalisadorLexico {
             
                if (isDigito(c) || isLetra(c) || isValido(c)) {
                   lexema += c;
-                  stateI = 4;
+                  estadoInicial = 4;
                } 
                break;
             case 12:
@@ -245,7 +245,7 @@ public class AnalisadorLexico {
             
                if (isValido(c)) {
                   lexema += c;
-                  stateI = 13;
+                  estadoInicial = 13;
                }
                break;
             case 13:
@@ -256,7 +256,7 @@ public class AnalisadorLexico {
                   lexema += c;
                } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
                   lexema += c;
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolve = false;
                } else {
                   printErrorCaracter();
@@ -267,11 +267,11 @@ public class AnalisadorLexico {
                //checkEOF(c);
             
                if (c != '*') {
-                  stateI = stateF;
+                  estadoInicial = estadoFinal;
                   devolucao = true;
                   devolve = true;
                } else {
-                  stateI = 15;
+                  estadoInicial = 15;
                   ehComentario = true;
                }
                break;
@@ -280,19 +280,19 @@ public class AnalisadorLexico {
                checkEOF(c);
                //System.out.println(c);
                if (c == '*')
-                  stateI = 16;
+                  estadoInicial = 16;
                break;
             case 16:
                c = (char) arquivo.read();
                //checkEOF(c);
                if (c == '*'){
-                  stateI = 16;
+                  estadoInicial = 16;
                } else if (c == '/') {
-                  stateI = 0;
+                  estadoInicial = 0;
                   lexema = "";
                   ehComentario = false;
                } else
-                  stateI = 15;
+                  estadoInicial = 15;
                break;
          }
       }
