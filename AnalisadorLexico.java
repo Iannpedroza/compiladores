@@ -4,8 +4,8 @@ import java.io.*;
 import java.util.Scanner; 
 
 public class AnalisadorLexico {
-   public TabelaDeSimbolo simbolos;
-   public AnalisadorLexico(TabelaDeSimbolo tabela){
+   public TabelaDeSimbolos simbolos;
+   public AnalisadorLexico(TabelaDeSimbolos tabela){
       this.simbolos = tabela;
    }
    char c;
@@ -90,7 +90,7 @@ public class AnalisadorLexico {
                   lexema += c;
                   ehEOF = true;
                   devolve = false;
-                  arquivo.close();
+                  //arquivo.close();
                }else if(c == '|'){
                   lexema += c;
                   estadoAtual = 17;
@@ -198,7 +198,7 @@ public class AnalisadorLexico {
                   lexema += c;
                   estadoAtual = 9;
                } else {//VALIDAR ISSO
-                  printErrorHexa();
+                  //printErrorHexa();
                }
                break;
             case 9:
@@ -211,7 +211,7 @@ public class AnalisadorLexico {
                   estadoAtual = estadoFinal;
                   devolve = false;
                }else {
-                  printErrorHexa();
+                  //printErrorHexa();
                }
                break;
             case 10:
@@ -311,9 +311,9 @@ public class AnalisadorLexico {
       simb = null;
       if (!ehEOF) {
          // Seleciona o simbolo da tabela de simbolos caso ele ja esteja na tabela
-         if (simbolos.tabela.get(lexema != null)) {
+         if (simbolos.tabela.get(lexema) != null) {
             simb = simbolos.tabela.get(lexema);
-         } else if (ehLetra(lexema.charAt(0)) || lexema.charAt(0) == '.' || lexema.charAt(0) == '_') {
+         } else if (ehLetra(lexema.charAt(0)) || lexema.charAt(0) == '_') {
             // Insere um novo ID na tabela de simbolos
             simb = simbolos.inserirID(lexema);
          } else if (ehDigito(lexema.charAt(0))) {
@@ -415,7 +415,7 @@ public class AnalisadorLexico {
     
    void checkEOF(char c) {
       if (this.ehEOF || c == 65535) {
-         System.out.println(this.linha);
+         System.out.println(linha);
          System.err.println( "fim de arquivo nao esperado.");
          System.exit(0);
       }
@@ -423,12 +423,12 @@ public class AnalisadorLexico {
 
    public static void main(String[] args) throws Exception {
       try {
-         TabelaDeSimbolo tS = new TabelaDeSimbolo();
+         TabelaDeSimbolos tS = new TabelaDeSimbolos();
          AnalisadorLexico aL = new AnalisadorLexico(tS);
          //FileReader reader2 = new FileReader("exemplo1.l");
          //BufferedReader br2 = new BufferedReader(reader2);
          Scanner s = new Scanner(System.in);
-         s.useDelimiter("(?<=.)");
+         s.useDelimiter(""); //delimiter ""
          Simbolo simbol = new Simbolo();
          while (s.hasNext()) {
               //simb = aL.analisarLexema(aL.devolve, br);
