@@ -50,7 +50,7 @@ public class AnalisadorLexico {
                   lexema += c;
                   estadoAtual = estadoFinal;
                   devolve = false;
-               } else if (c == 32 || c == 11 || c == 8 || c == 13 || c == 9) {
+               } else if (c == 8 || c == 9 || c == 11 || c == 13 || c == 32) {
                // lendo "lixo" espaÃƒÂ§o em branco, enter tabs vertical e horizontal
                   estadoAtual = estadoInicial;
                } else if (c == '/') {
@@ -92,7 +92,10 @@ public class AnalisadorLexico {
                   ehEOF = true;
                   devolve = false;
                   arquivo.close();
-               } else {
+               }else if(c == '|'){
+                  lexema += c;
+                  estadoAtual = 17;
+               }else {
                   //System.err.println(linha + ":Caractere invalido");
                   System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + c +"]");
                   System.exit(0);
@@ -292,6 +295,18 @@ public class AnalisadorLexico {
                   estadoAtual = 15;
                }
                break;
+
+            case 17:
+               c = s.next();
+               if(c == '|'){
+                  estadoAtual = estadoFinal;
+                  devolve = false;
+               } 
+               else{
+                  estadoAtual = estadoFinal;
+                  devolve = true;
+                  devolucao = true;
+               }  
          }
       }
       simb = null;
