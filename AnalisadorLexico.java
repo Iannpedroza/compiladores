@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.List;
 import java.io.*;
-//dasdsa
+
 public class AnalisadorLexico {
    public TabelaDeSimbolo simbolos;
    public AnalisadorLexico(TabelaDeSimbolo tabela){
@@ -15,7 +15,7 @@ public class AnalisadorLexico {
    public static int linha = 0;
    public boolean ehComentario = false;
    public boolean ehEOF = false;
-   public static char validos[] = {' ' ,'_' ,  '.' ,  ',' ,  ';' ,  '&' ,  ':' ,  '(' ,  ')' ,  '[' ,  ']' , '{','}', '+' ,  '-' ,  '\'' ,  '/' , '*',  '%' ,  '^' ,  '@' ,  '!' ,  '?' ,  '>' ,  '<' ,  '='};
+   public static char validos[] = {' ' ,'_' ,  '.' ,  ',' ,  ';' ,  '&' ,  ':' ,  '(' ,  ')' ,  '[' ,  ']' , '{','}', '+' ,  '-' ,  '"' ,  '`' , '/',  '!' ,  '?' ,  '>' ,  '<' ,  '=' , '\n'};
    
    
    Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo) throws Exception {
@@ -38,8 +38,7 @@ public class AnalisadorLexico {
             // Quebra de linha no arquivo
                if (c == '\n') { // @TODO entender o char 11
                   linha++;
-               } else if (c == '+' || c == '-' || c == '*' || c == '%' || c == '(' || c == ')' || c == '[' || c == ']'
-                  || c == '{' || c == '}' || c == ';' || c == ',' || c == '=') {
+               } else if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')' || c == ';' || c == ',' || c == '=') {
                // LÃƒÂª os tokens que possuem somente 1 caractere e vao para o estado final
                // Nada ÃƒÂ© devolvido
                   lexema += c;
