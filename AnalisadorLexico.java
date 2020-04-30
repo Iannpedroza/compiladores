@@ -38,6 +38,10 @@ public class AnalisadorLexico {
             // Quebra de linha no arquivo
                if (c == '\n') { // @TODO entender o char 11
                   linha++;
+               } else if (isLetra(c) || c == '_') {
+               // lendo identificador
+                  lexema += c;
+                  estadoInicial = 5;
                } else if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')' || c == ';' || c == ',' || c == '=') {
                // LÃƒÂª os tokens que possuem somente 1 caractere e vao para o estado final
                // Nada ÃƒÂ© devolvido
@@ -50,40 +54,30 @@ public class AnalisadorLexico {
                } else if (c == '/') {
                   lexema += c;
                   estadoInicial = 14;
-               } else if (c == '>') {
-               // Possui 2 variacoes: '>' e '>=', vai para o proximo estado para decidir qual o
+               } else if (c == '>' || c == '<') {
+               // Possui 2 variacoes: '>' e '>=' e '<' e '<=', vai para o proximo estado para decidir qual o
                // token
                   lexema += c;
                   estadoInicial = 2;
-               } else if (c == '<') {
-               // Possui 3 variacoes: '<', '<>' e '<=', vai para o proximo estado para decidir
-               // qual o token
-                  lexema += c;
-                  estadoInicial = 3;
                } else if(c == '!'){
                   lexema += c;
-                  estadoInicial = 2;
+                  //estadoInicial = ; trocar
                } else if(c == '&'){
                   lexema += c;
                   // estadoInicial = (criar estado de acordo com o nosso automato)
-               } 
-               /*
-               * else if (c == '=') { // Possui 2 variacoes: '=' e '==', vai para o proximo
-               * estado para decidir qual o // token lexema += c; estadoInicial = 4; }
-               */
-               else if (c == '\'') {
+               } else if (c == '=') { // Possui 2 variacoes: '=' e '==', vai para o proximo
+                  //estado para decidir qual o // token 
+                  lexema += c; 
+               
+               } else if (c == '\'') {
                // Constante do tipo 'constante'
+               //avaliar se deve ser retirado
                   lexema += c;
                   estadoInicial = 11;
                } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
                // Constante do tipo "constante"
                   lexema += c;
                   estadoInicial = 12;
-               } else if (isLetra(c) || c == '.' || c == '_') {
-               // Criacao de um id ou token que possui lexema constituido por letras, '.' ou
-               // '_'
-                  lexema += c;
-                  estadoInicial = 5;
                } else if (isDigito(c)) {
                   if (c == '0') {
                   // Constante do tipo 0x(hexa)(hexa)
@@ -94,7 +88,11 @@ public class AnalisadorLexico {
                      lexema += c;
                      estadoInicial = 10;
                   }
+               } else if (c == '-') {
+                  lexema += c;
+                  //estado definir
                } else if (c == 65535) {
+                  //verificar com luigi
                   estadoInicial = estadoFinal;
                   lexema += c;
                   ehEOF = true;
