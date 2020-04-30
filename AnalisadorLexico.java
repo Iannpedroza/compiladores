@@ -15,7 +15,7 @@ public class AnalisadorLexico {
    public static int linha = 0;
    public boolean ehComentario = false;
    public boolean ehEOF = false;
-   public static int estadoInicial = 0;
+   public static final int estadoInicial = 0;
    public static char validos[] = {' ' ,'_' ,  '.' ,  ',' ,  ';' ,  '&' ,  ':' ,  '(' ,  ')' ,  '[' ,  ']' , '{','}', '+' ,  '-' ,  '"' ,  '\'' , '/',  '!' ,  '?' ,  '>' ,  '<' ,  '=' , '\n'};
    
    
@@ -39,7 +39,7 @@ public class AnalisadorLexico {
             // Quebra de linha no arquivo
                if (c == '\n') { // @TODO entender o char 11
                   linha++;
-               } else if (isLetra(c) || c == '_') {
+               } else if (ehLetra(c) || c == '_') {
                // lendo identificador
                   lexema += c;
                   estadoAtual = 5;
@@ -79,9 +79,10 @@ public class AnalisadorLexico {
                // Constante do tipo "constante"
                   lexema += c;
                   estadoAtual = 12;
-               } else if (isDigito(c)) {
+               } else if (ehDigito(c)) {
+                  //Validação de constantes 
                   if (c == '0') {
-                  // Constante do tipo 0x(hexa)(hexa)
+                  // Hexadecimal ou número iniciado de 0
                      lexema += c;
                      estadoAtual = 7;
                   } else {
@@ -156,7 +157,7 @@ public class AnalisadorLexico {
                //checkEOF(c);
             
             // Continua no mesmo estado caso letra digito ou sublinhado
-               if (isLetra(c) || c == '_' || isDigito(c)) {
+               if (ehLetra(c) || c == '_' || ehDigito(c)) {
                   lexema += c;
                } else {
                   estadoAtual = estadoFinal;
@@ -182,10 +183,10 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-               if (c == 'x' || c == 'X') {
+               if (c == 'x') {
                   lexema += c;
                   estadoAtual = 8;
-               } else if (isDigito(c)) {
+               } else if (ehDigito(c)) {
                   lexema += c;
                   estadoAtual = 10;
                } else {
@@ -198,11 +199,11 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-            // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
-               if (Character.digit(c, 16) >= 0) {
+               //VALIDA SE É UM HEXA VALIDO
+               if (ehHexa(c)) {
                   lexema += c;
                   estadoAtual = 9;
-               } else {
+               } else {//VALIDAR ISSO
                   printErrorHexa();
                }
                break;
@@ -210,8 +211,8 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-            // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
-               if (Character.digit(c, 16) >= 0) {
+               //VALIDA SE É UM HEXA VALIDO
+               if (ehHexa(c)) {
                   lexema += c;
                   estadoAtual = estadoFinal;
                   devolve = false;
@@ -223,7 +224,7 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-               if (isDigito(c)) {
+               if (ehDigito(c)) {
                   lexema += c;
                } else {
                   estadoAtual = estadoFinal;
@@ -235,7 +236,7 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-               if (isDigito(c) || isLetra(c) || isValido(c)) {
+               if (ehDigito(c) || ehLetra(c) || ehValido(c)) {
                   lexema += c;
                   estadoAtual = 4;
                } 
@@ -244,7 +245,7 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-               if (isValido(c)) {
+               if (ehValido(c)) {
                   lexema += c;
                   estadoAtual = 13;
                }
@@ -253,7 +254,7 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-               if (isValido(c)) {
+               if (ehValido(c)) {
                   lexema += c;
                } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
                   lexema += c;
@@ -302,10 +303,10 @@ public class AnalisadorLexico {
          // Seleciona o simbolo da tabela de simbolos caso ele ja esteja na tabela
          if (simbolos.tabela.get(lexema != null) {
             simb = simbolos.tabela.get(lexema);
-         } else if (isLetra(lexema.charAt(0)) || lexema.charAt(0) == '.' || lexema.charAt(0) == '_') {
+         } else if (ehLetra(lexema.charAt(0)) || lexema.charAt(0) == '.' || lexema.charAt(0) == '_') {
             // Insere um novo ID na tabela de simbolos
             simb = simbolos.inserirID(lexema);
-         } else if (isDigito(lexema.charAt(0))) {
+         } else if (ehDigito(lexema.charAt(0))) {
          
             if (lexema.charAt(0) == '0') {
                if (lexema.length() == 1) {
@@ -325,7 +326,7 @@ public class AnalisadorLexico {
                   } else {
                      // Verifica se possui algum caracter nao numerico
                      for (int i = 0; i < lexema.length(); i++) {
-                        if (!isDigito(lexema.charAt(i))) {
+                        if (!ehDigito(lexema.charAt(i))) {
                            printError();
                         }
                      }
@@ -337,7 +338,7 @@ public class AnalisadorLexico {
             } else {
                // Verifica se possui algum caracter nao numerico
                for (int i = 0; i < lexema.length(); i++) {
-                  if (!isDigito(lexema.charAt(i))) {
+                  if (!ehDigito(lexema.charAt(i))) {
                      printError();
                   }
                }
@@ -360,22 +361,29 @@ public class AnalisadorLexico {
       return simb;
    }
 
-   public static boolean isLetra(char c) {
-      boolean ehLetra = false;
-      if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z')
-         ehLetra = true;
-      return ehLetra;
+   public static boolean ehHexa(char c) {
+      if (c >= 'A' && c <= 'F' || ehDigito(c)){
+         return true;
+      }
+      return false;
    }
 
-   public static boolean isDigito(char c) {
-      boolean ehDigito = false;
-      if (c >= '0' && c <= '9')
-         ehDigito = true;
-      return ehDigito;
+   public static boolean ehLetra(char c) {
+      if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'){
+         return true;
+      }
+      return false;
    }
 
-   public static boolean isValido(char c) {
-      return (isLetra(c) || isDigito(c) || new String(validos).indexOf(c) >= 0);
+   public static boolean ehDigito(char c) {
+      if (c >= '0' && c <= '9'){
+         return true;
+      }
+      return false;
+   }
+
+   public static boolean ehValido(char c) {
+      return (ehLetra(c) || ehDigito(c) || new String(validos).indexOf(c) >= 0);
    }
 
    public void printError() {
