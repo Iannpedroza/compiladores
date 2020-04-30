@@ -8,11 +8,10 @@ public class AnalisadorLexico {
    public AnalisadorLexico(TabelaDeSimbolo tabela){
       this.simbolos = tabela;
    }
-
+   char c;
    String lexema = "";
    public boolean devolve = false;
    Simbolo simb;
-   char c;
    public static int linha = 0;
    public boolean ehComentario = false;
    public boolean ehEOF = false;
@@ -32,7 +31,7 @@ public class AnalisadorLexico {
          switch (estadoAtual) {
             case 0:
                if (devolucao == false) {
-                  c = s.next();
+                  c = s.next().charAt(0);
       
                }
                devolucao = false;
@@ -102,7 +101,7 @@ public class AnalisadorLexico {
                }
                break;
             case 2:
-               c = s.next();
+               c = s.next().charAt(0);
             //checkEOF(c);
             
                if (c == '=') {
@@ -116,7 +115,7 @@ public class AnalisadorLexico {
                }
                break;
             case 3:
-               c = s.next();
+               c = s.next().charAt(0);
             //checkEOF(c);
             
                if (c == '=') {
@@ -134,7 +133,7 @@ public class AnalisadorLexico {
                }
                break;
             case 4:
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
                
                if (c == '\'') {
@@ -148,7 +147,7 @@ public class AnalisadorLexico {
                }
                break;
             case 5:
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
             // Continua no mesmo estado caso letra digito ou sublinhado
@@ -162,7 +161,7 @@ public class AnalisadorLexico {
                break;
             case 6:
                // Verifica as 3 variações de '<': '<-' , '<', '<='
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                if (c == '=' || c == '-') {
@@ -175,7 +174,7 @@ public class AnalisadorLexico {
                }
                break;
             case 7:
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                if (c == 'x') {
@@ -191,7 +190,7 @@ public class AnalisadorLexico {
                }
                break;
             case 8:
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                //VALIDA SE É UM HEXA VALIDO
@@ -203,7 +202,7 @@ public class AnalisadorLexico {
                }
                break;
             case 9:
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                //VALIDA SE É UM HEXA VALIDO
@@ -217,7 +216,7 @@ public class AnalisadorLexico {
                break;
             case 10:
                //VALIDA CONSTANTE
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                if (ehDigito(c)) {
@@ -229,7 +228,7 @@ public class AnalisadorLexico {
                }
                break;
             case 11:
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                if (c == '&') {
@@ -243,7 +242,7 @@ public class AnalisadorLexico {
                break;
             case 12:
                //Validação de strings
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                if (ehValido(c)) {
@@ -255,14 +254,14 @@ public class AnalisadorLexico {
                }
                break;
             case 13:
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                
                break;
             case 14:
                // Cases 14, 15 e 16 validam os comentários e o token '/'
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
             
                if (c != '*') {
@@ -275,7 +274,7 @@ public class AnalisadorLexico {
                }
                break;
             case 15:
-               c = s.next();
+               c = s.next().charAt(0);
                checkEOF(c);
                //System.out.println(c);
                if (c == '*') {
@@ -283,7 +282,7 @@ public class AnalisadorLexico {
                }
                break;
             case 16:
-               c = s.next();
+               c = s.next().charAt(0);
                //checkEOF(c);
                if (c == '*'){
                   estadoAtual = 16;
@@ -297,7 +296,7 @@ public class AnalisadorLexico {
                break;
 
             case 17:
-               c = s.next();
+               c = s.next().charAt(0);
                if(c == '|'){
                   estadoAtual = estadoFinal;
                   devolve = false;
@@ -426,9 +425,10 @@ public class AnalisadorLexico {
          //FileReader reader2 = new FileReader("exemplo1.l");
          //BufferedReader br2 = new BufferedReader(reader2);
          Scanner s = new Scanner(System.in);
+         s.useDelimiter("(?<=.)");
          Simbolo simbol = new Simbolo();
          while (s.hasNext()) {
-            //simb = aL.analisarLexema(aL.devolve, br);
+              //simb = aL.analisarLexema(aL.devolve, br);
             simbol = aL.analisarLexema(aL.devolve, s);
             if (simbol != null) {
                System.out.println(simbol.getToken()+" "+simbol.getLexema());
