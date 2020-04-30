@@ -311,7 +311,7 @@ public class AnalisadorLexico {
       simb = null;
       if (!ehEOF) {
          // Seleciona o simbolo da tabela de simbolos caso ele ja esteja na tabela
-         if (simbolos.tabela.get(lexema != null) {
+         if (simbolos.tabela.get(lexema != null)) {
             simb = simbolos.tabela.get(lexema);
          } else if (ehLetra(lexema.charAt(0)) || lexema.charAt(0) == '.' || lexema.charAt(0) == '_') {
             // Insere um novo ID na tabela de simbolos
@@ -320,7 +320,7 @@ public class AnalisadorLexico {
          
             if (lexema.charAt(0) == '0') {
                if (lexema.length() == 1) {
-                  simb = simbolos.inserirConst(lexema, "tipo_inteiro");
+                  simb = simbolos.inserirConst(lexema);
                } else {
                   // Constante hexadecimal
                   if (lexema.length() > 2 && (lexema.charAt(1) == 'X' || lexema.charAt(1) == 'x')) {
@@ -328,7 +328,7 @@ public class AnalisadorLexico {
                      if (lexema.length() == 4) {
                         // Verifica se os 2 ultimos digitos sao hexadecimais
                         if (Character.digit(lexema.charAt(2), 16) >= 0 && Character.digit(lexema.charAt(3), 16) >= 0) {
-                           simb = simbolos.inserirConst(lexema, "tipo_caracter");
+                           simb = simbolos.inserirConst(lexema);
                         } else {
                            printError();
                         }
@@ -341,7 +341,7 @@ public class AnalisadorLexico {
                         }
                      }
                   
-                     simb = simbolos.inserirConst(lexema, "tipo_inteiro");
+                     simb = simbolos.inserirConst(lexema);
                   }
                
                }
@@ -353,16 +353,16 @@ public class AnalisadorLexico {
                   }
                }
             
-               simb = simbolos.inserirConst(lexema, "tipo_inteiro");
+               simb = simbolos.inserirConst(lexema);
             }
          } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
-            simb = simbolos.inserirConst(lexema, "tipo_caracter");
+            simb = simbolos.inserirConst(lexema);
          } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
             String x = lexema.substring(0,lexema.length()-1);
             x += "$";
             x += '"';
             lexema = x;
-            simb = simbolos.inserirConst(lexema, "tipo_string");
+            simb = simbolos.inserirConst(lexema);
          } else {
             printError();
          }
