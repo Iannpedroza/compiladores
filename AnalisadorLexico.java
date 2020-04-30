@@ -397,23 +397,26 @@ public class AnalisadorLexico {
    }
 
    public void printError() {
-      System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + lexema+"]");
+      System.out.println(linha+1);
+      System.out.println("Lexema nao identificado [" +lexema+"].");
       System.exit(1);
    }
    
    public void printErrorCaracter() {
-      System.out.println("Erro na linha: " + (linha+1) + ". Caractere nao reconhecido: [" + c +"]");
+      System.out.println(linha+1);
+      System.out.println("caractere invalido.");
       System.exit(1);
    }
    
-   public void printErrorHexa() {
+  /* public void printErrorHexa() {
       System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + lexema +""+ c +"]");
       System.exit(1);
-   }
+   }*/ //RETIRAR DO ANALIZADOR LEXICOOOOOOOOOOOOOOO
     
    void checkEOF(char c) {
       if (this.ehEOF || c == 65535) {
-         System.err.println(this.linha + ":Fim de arquivo nao esperado.");
+         System.out.println(this.linha);
+         System.err.println( "fim de arquivo nao esperado.");
          System.exit(0);
       }
    }
