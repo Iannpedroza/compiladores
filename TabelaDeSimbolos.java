@@ -82,7 +82,7 @@ public class TabelaDeSimbolos {
 /**/ 
    public String pesquisa(String lexema){
         Simbolo aux = tabela.get(lexema);
-        return ((aux == null) ? "NULL" : ""+aux.getEnd());
+        return ((aux == null) ? "NULL" : ""+aux.getEnd()); 
    }
   
    public Simbolo inserirID(String lexema){
@@ -98,8 +98,8 @@ public class TabelaDeSimbolos {
    }
 
   
-   public Simbolo inserirConst(String lexema, String tipo){
-       Simbolo simbolo = new Simbolo(VALORCONST, lexema, ++endereco, tipo);
+   public Simbolo inserirConst(String lexema){
+       Simbolo simbolo = new Simbolo(VALORCONST, lexema, ++endereco);
        tabela.put(lexema, simbolo);
        return tabela.get(lexema);
     }
