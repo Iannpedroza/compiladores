@@ -29,22 +29,21 @@ public class TabelaDeSimbolos {
    public final byte TRUE = 22;
    public final byte FALSE = 23;
    public final byte BOOLEAN = 24;
-   public final byte ID = 25;
-   public final byte VALORCONST = 26;
-   public final byte FINAL = 27;
-   public final byte STRING = 28;
-   public final byte WHILE = 29;
-   public final byte AND = 30;
-   public final byte NEG = 31;
-   public final byte BEGIN = 32;
-   public final byte ENDWHILE = 33;
-   public final byte ENDIF = 34;
-   public final byte ENDELSE = 35;
-   public final byte COMPARA = 36;            
+   public final byte FINAL = 26;
+   public final byte STRING = 27;
+   public final byte WHILE = 28;
+   public final byte AND = 29;
+   public final byte NEG = 30;
+   public final byte BEGIN = 31;
+   public final byte ENDWHILE = 32;
+   public final byte ENDIF = 33;
+   public final byte ENDELSE = 34;
+   public final byte COMPARA = 35;            
 	
    public TabelaDeSimbolos() {
       tabela.put("if", new Simbolo(IF,"if", ++endereco));
       tabela.put("int", new Simbolo(INT,"int", ++endereco));
+      tabela.put("byte", new Simbolo(BYTE,"byte", ++endereco));
       tabela.put("writeln", new Simbolo(WRITELN,"writeln", ++endereco));
       tabela.put("write", new Simbolo(WRITE,"write", ++endereco));
       tabela.put("readln", new Simbolo(READLN,"readln", ++endereco));
@@ -53,6 +52,7 @@ public class TabelaDeSimbolos {
       tabela.put(")", new Simbolo(FPAR,")", ++endereco));
       tabela.put(";", new Simbolo(PONTOVIRGULA,";", ++endereco));
       tabela.put("<-", new Simbolo(ATT,"<-", ++endereco));
+      tabela.put("||", new Simbolo(OR,"||", ++endereco));
       tabela.put(">", new Simbolo(MAIOR,">",++endereco));
       tabela.put("<", new Simbolo(MENOR,"<", ++endereco));
       tabela.put(">=", new Simbolo(MAIORIG,">=", ++endereco));
@@ -63,12 +63,13 @@ public class TabelaDeSimbolos {
       tabela.put("-", new Simbolo(SUB,"-", ++endereco));
       tabela.put("/", new Simbolo(DIV,"/", ++endereco));
       tabela.put("*", new Simbolo(MULT,"*", ++endereco));
+      tabela.put("TRUE", new Simbolo(TRUE,"TRUE", ++endereco));
+      tabela.put("FALSE", new Simbolo(FALSE,"FALSE", ++endereco));
       tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++endereco));   
       tabela.put("final", new Simbolo(FINAL,"final", ++endereco)); 
       tabela.put("string", new Simbolo(STRING,"string", ++endereco));
       tabela.put("while", new Simbolo(WHILE,"while", ++endereco));
       tabela.put("&&", new Simbolo(AND,"&&", ++endereco)); 
-      tabela.put("||", new Simbolo(OR,"||", ++endereco));
       tabela.put("!", new Simbolo(NEG,"!", ++endereco));
       tabela.put("begin", new Simbolo(BEGIN,"begin", ++endereco)); 
       tabela.put("endwhile", new Simbolo(ENDWHILE,"endwhile", ++endereco)); 
