@@ -77,7 +77,7 @@ public class TabelaDeSimbolos {
       tabela.put("endelse", new Simbolo(ENDELSE,"endelse", ++endereco));
       tabela.put("=", new Simbolo(COMPARA,"=", ++endereco));                    
    }
-
+/**/ 
    public String pesquisa(String lexema){
         Simbolo aux = tabela.get(lexema);
         return ((aux == null) ? "NULL" : ""+aux.getEnd());
