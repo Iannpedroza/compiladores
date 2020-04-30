@@ -38,7 +38,9 @@ public class TabelaDeSimbolos {
    public final byte ENDWHILE = 32;
    public final byte ENDIF = 33;
    public final byte ENDELSE = 34;
-   public final byte COMPARA = 35;            
+   public final byte COMPARA = 35; 
+   public final byte ID = 36;  
+   public final byte VALORCONST = 37;             
 	
    public TabelaDeSimbolos() {
       tabela.put("if", new Simbolo(IF,"if", ++endereco));
