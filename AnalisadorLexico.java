@@ -15,7 +15,7 @@ public class AnalisadorLexico {
    public static int linha = 0;
    public boolean ehComentario = false;
    public boolean ehEOF = false;
-   public static char validos[] = {' ' ,'_' ,  '.' ,  ',' ,  ';' ,  '&' ,  ':' ,  '(' ,  ')' ,  '[' ,  ']' , '{','}', '+' ,  '-' ,  '"' ,  '`' , '/',  '!' ,  '?' ,  '>' ,  '<' ,  '=' , '\n'};
+   public static char validos[] = {' ' ,'_' ,  '.' ,  ',' ,  ';' ,  '&' ,  ':' ,  '(' ,  ')' ,  '[' ,  ']' , '{','}', '+' ,  '-' ,  '"' ,  '\'' , '/',  '!' ,  '?' ,  '>' ,  '<' ,  '=' , '\n'};
    
    
    Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo) throws Exception {
