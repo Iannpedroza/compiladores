@@ -60,6 +60,12 @@ public class AnalisadorLexico {
                // qual o token
                   lexema += c;
                   estadoInicial = 3;
+               } else if(c == '!'){
+                  lexema += c;
+                  estadoInicial = 2;
+               } else if(c == '&'){
+                  lexema += c;
+                  // estadoInicial = (criar estado de acordo com o nosso automato)
                }
                /*
                * else if (c == '=') { // Possui 2 variacoes: '=' e '==', vai para o proximo
