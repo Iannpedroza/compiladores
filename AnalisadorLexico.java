@@ -38,8 +38,7 @@ public class AnalisadorLexico {
             // Quebra de linha no arquivo
                if (c == '\n') { // @TODO entender o char 11
                   linha++;
-               } else if (c == '+' || c == '-' || c == '*' || c == '%' || c == '(' || c == ')' || c == '[' || c == ']'
-                  || c == '{' || c == '}' || c == ';' || c == ',' || c == '=') {
+               } else if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')' || c == ';' || c == ',' || c == '=') {
                // LÃƒÂª os tokens que possuem somente 1 caractere e vao para o estado final
                // Nada ÃƒÂ© devolvido
                   lexema += c;
