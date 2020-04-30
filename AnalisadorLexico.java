@@ -65,18 +65,13 @@ public class AnalisadorLexico {
                   estadoAtual = 6;
                } else if(c == '&'){
                   lexema += c;
-                  // estadoAtual = (criar estado de acordo com o nosso automato)
+                  estadoAtual = 11;
                } else if (c == '=') { // Possui 2 variacoes: '=' e '==', vai para o proximo
                   //estado para decidir qual o // token 
                   lexema += c; 
                
-               } else if (c == '\'') {
-               // Constante do tipo 'constante'
-               //avaliar se deve ser retirado
-                  lexema += c;
-                  estadoAtual = 11;
-               } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
-               // Constante do tipo "constante"
+               } else if (c == '"') {
+               // String
                   lexema += c;
                   estadoAtual = 12;
                } else if (ehDigito(c)) {
@@ -90,10 +85,7 @@ public class AnalisadorLexico {
                      lexema += c;
                      estadoAtual = 10;
                   }
-               } else if (c == '-') {
-                  lexema += c;
-                  //estado definir
-               } else if (c == 65535) {
+               }  else if (c == 65535) {
                   //verificar com luigi
                   estadoAtual = estadoFinal;
                   lexema += c;
@@ -221,6 +213,7 @@ public class AnalisadorLexico {
                }
                break;
             case 10:
+               //VALIDA CONSTANTE
                c = (char) arquivo.read();
                //checkEOF(c);
             
@@ -236,35 +229,36 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-               if (ehDigito(c) || ehLetra(c) || ehValido(c)) {
+               if (c == '&') {
                   lexema += c;
-                  estadoAtual = 4;
-               } 
+                  estadoAtual = estadoFinal;
+               } else{
+                  estadoAtual = estadoFinal;
+                  devolve = true;
+                  devolucao = true;
+               }
                break;
             case 12:
+               //Validação de strings
                c = (char) arquivo.read();
                //checkEOF(c);
             
                if (ehValido(c)) {
                   lexema += c;
                   estadoAtual = 13;
+               }else if (c == '"') {
+                  lexema += c;
+                  estadoAtual = estadoFinal;
                }
                break;
             case 13:
                c = (char) arquivo.read();
                //checkEOF(c);
             
-               if (ehValido(c)) {
-                  lexema += c;
-               } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
-                  lexema += c;
-                  estadoAtual = estadoFinal;
-                  devolve = false;
-               } else {
-                  printErrorCaracter();
-               }
+               
                break;
             case 14:
+               // Cases 14, 15 e 16 validam os comentários e o token '/'
                c = (char) arquivo.read();
                //checkEOF(c);
             
@@ -281,8 +275,9 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                checkEOF(c);
                //System.out.println(c);
-               if (c == '*')
+               if (c == '*') {
                   estadoAtual = 16;
+               }
                break;
             case 16:
                c = (char) arquivo.read();
@@ -293,8 +288,9 @@ public class AnalisadorLexico {
                   estadoAtual = estadoInicial;
                   lexema = "";
                   ehComentario = false;
-               } else
+               } else {
                   estadoAtual = 15;
+               }
                break;
          }
       }
