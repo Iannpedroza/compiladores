@@ -167,6 +167,7 @@ public class AnalisadorLexico {
                if (c == '=' || c == '-') {
                   lexema += c;
                   estadoAtual = estadoFinal;
+                  devolve = false; //AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
                } else {
                   estadoAtual = estadoFinal;
                   devolucao = true;
@@ -250,7 +251,10 @@ public class AnalisadorLexico {
                if (c == '"') {
                   lexema += c;
                   estadoAtual = estadoFinal;
-               } else if (c == '\n' || c== '\r') {
+                  devolve = false;
+               }/*else if(c == ""){ 
+
+               }*/ else if (c == '\n' || c== '\r') {
                   printError();
                } else if (ehValido(c)) {
                   lexema += c;
@@ -303,6 +307,7 @@ public class AnalisadorLexico {
 
             case 17:
                c = s.next().charAt(0);
+
                if(c == '|'){
                   estadoAtual = estadoFinal;
                   devolve = false;
@@ -344,6 +349,7 @@ public class AnalisadorLexico {
                      for (int i = 0; i < lexema.length(); i++) {
                         if (!ehDigito(lexema.charAt(i))) {
                            printError();
+                           System.out.println("é aqui");
                         }
                      }
                   
@@ -432,8 +438,9 @@ public class AnalisadorLexico {
          TabelaDeSimbolos tS = new TabelaDeSimbolos();
          AnalisadorLexico aL = new AnalisadorLexico(tS);
          //FileReader reader2 = new FileReader("exemplo1.l");
-         //BufferedReader br2 = new BufferedReader(reader2);
-         Scanner s = new Scanner(System.in);
+        // BufferedReader br2 = new BufferedReader(reader2);
+        //BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Scanner s = new Scanner(System.in);
          s.useDelimiter(""); //delimiter ""
          Simbolo simbol = new Simbolo();
          while (s.hasNext()) {
