@@ -95,9 +95,7 @@ public class AnalisadorLexico {
                   lexema += c;
                   estadoAtual = 17;
                }else {
-                  //System.err.println(linha + ":Caractere invalido");
-                  System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + c +"]");
-                  System.exit(0);
+                  printErrorCaracter();
                }
                break;
             case 2:
