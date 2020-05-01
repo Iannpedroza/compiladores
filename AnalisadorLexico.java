@@ -43,7 +43,7 @@ public class AnalisadorLexico {
                // lendo identificador
                   lexema += c;
                   estadoAtual = 5;
-               } else if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')' || c == ';' || c == ',' || c == '=') {
+               } else if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')' || c == ';'|| c == ',' || c == '=') {
                // LÃƒÂª os tokens que possuem somente 1 caractere e vao para o estado final
                // Nada ÃƒÂ© devolvido
                   lexema += c;
@@ -94,6 +94,7 @@ public class AnalisadorLexico {
                }else if(c == '|'){
                   lexema += c;
                   estadoAtual = 17;
+
                }else {
                   printErrorCaracter();
                }
@@ -250,9 +251,8 @@ public class AnalisadorLexico {
                   lexema += c;
                   estadoAtual = estadoFinal;
                   devolve = false;
-               }/*else if(c == ""){ 
-
-               }*/ else if (c == '\n' || c== '\r') {
+               
+               }else if (c == '\n' || c== '\r') {
                   printError();
                } else if (ehValido(c)) {
                   lexema += c;
@@ -314,7 +314,9 @@ public class AnalisadorLexico {
                   estadoAtual = estadoFinal;
                   devolve = true;
                   devolucao = true;
-               }  
+               } 
+               
+               
          }
       }
       simb = null;
