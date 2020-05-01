@@ -279,7 +279,7 @@ class AnalisadorLexico {
                     break;
                 case 15:
                     c = s.next().charAt(0);
-                    checkEOF(c);
+                    // checkEOF(c);
                     // System.out.println(c);
                     if (c == '*') {
                         estadoAtual = 16;
@@ -317,39 +317,33 @@ class AnalisadorLexico {
         simb = null;
         if (!ehEOF) {
             // Seleciona o simbolo da tabela de tabela caso ele ja esteja na tabela
-            if (tabela.tabela.get(lexema) != null) {// TRROOOCAAAARRRR
-                simb = tabela.tabela.get(lexema);
+            if (tabela.hash.get(lexema) != null) {
+                simb = tabela.hash.get(lexema);
             } else if (ehLetra(lexema.charAt(0)) || lexema.charAt(0) == '_') {
-                // Insere um novo ID na tabela de tabela
-                simb = tabela.inserirID(lexema);
+                // Insere um novo identificador na tabela de simbolos
+                simb = tabela.insereID(lexema);
             } else if (ehDigito(lexema.charAt(0))) {
 
                 if (lexema.charAt(0) == '0') {
                     if (lexema.length() == 1) {
-                        simb = tabela.inserirConst(lexema);
+                        simb = tabela.insereConstante(lexema);
                     } else {
                         // Constante hexadecimal
-                        if (lexema.length() > 2 && (lexema.charAt(1) == 'X' || lexema.charAt(1) == 'x')) {
+                        if (lexema.length() > 2 && lexema.charAt(1) == 'x') {
                             // Constantes hexa sao do tipo 0xFF -> 4 caracteres
                             if (lexema.length() == 4) {
-                                // Verifica se os 2 ultimos digitos sao hexadecimais
-                                if (Character.digit(lexema.charAt(2), 16) >= 0
-                                        && Character.digit(lexema.charAt(3), 16) >= 0) {
-                                    simb = tabela.inserirConst(lexema);
-                                } else {
-                                    printError();
-                                }
+                                //Insere a constante HEXA
+                                simb = tabela.insereConstante(lexema);
                             }
                         } else {
                             // Verifica se possui algum caracter nao numerico
                             for (int i = 0; i < lexema.length(); i++) {
                                 if (!ehDigito(lexema.charAt(i))) {
                                     printError();
-                                    System.out.println("é aqui");
                                 }
                             }
 
-                            simb = tabela.inserirConst(lexema);
+                            simb = tabela.insereConstante(lexema);
                         }
 
                     }
@@ -361,16 +355,16 @@ class AnalisadorLexico {
                         }
                     }
 
-                    simb = tabela.inserirConst(lexema);
+                    simb = tabela.insereConstante(lexema);
                 }
             } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
-                simb = tabela.inserirConst(lexema);
+                simb = tabela.insereConstante(lexema);
             } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
                 String x = lexema.substring(0, lexema.length() - 1);
                 x += "$";
                 x += '"';
                 lexema = x;
-                simb = tabela.inserirConst(lexema);
+                simb = tabela.insereConstante(lexema);
             } else {
                 printError();
             }
@@ -516,7 +510,7 @@ class Simbolo {
 }
 
 class TabelaDeSimbolos {
-    public HashMap<String, Simbolo> tabela = new HashMap<>();
+    public HashMap<String, Simbolo> hash = new HashMap<>();
     public static int endereco = -1;
 
     public final byte IF = 0;
@@ -558,81 +552,58 @@ class TabelaDeSimbolos {
     public final byte VALORCONST = 37;
 
     public TabelaDeSimbolos() {
-        tabela.put("if", new Simbolo(IF, "if", ++endereco));
-        tabela.put("int", new Simbolo(INT, "int", ++endereco));
-        tabela.put("byte", new Simbolo(BYTE, "byte", ++endereco));
-        tabela.put("writeln", new Simbolo(WRITELN, "writeln", ++endereco));
-        tabela.put("write", new Simbolo(WRITE, "write", ++endereco));
-        tabela.put("readln", new Simbolo(READLN, "readln", ++endereco));
-        tabela.put("else", new Simbolo(ELSE, "else", ++endereco));
-        tabela.put("(", new Simbolo(APAR, "(", ++endereco));
-        tabela.put(")", new Simbolo(FPAR, ")", ++endereco));
-        tabela.put(";", new Simbolo(PONTOVIRGULA, ";", ++endereco));
-        tabela.put("<-", new Simbolo(ATT, "<-", ++endereco));
-        tabela.put("||", new Simbolo(OR, "||", ++endereco));
-        tabela.put(">", new Simbolo(MAIOR, ">", ++endereco));
-        tabela.put("<", new Simbolo(MENOR, "<", ++endereco));
-        tabela.put(">=", new Simbolo(MAIORIG, ">=", ++endereco));
-        tabela.put("<=", new Simbolo(MENORIG, "<=", ++endereco));
-        tabela.put("!=", new Simbolo(DIFF, "!=", ++endereco));
-        tabela.put(",", new Simbolo(VIRGULA, ",", ++endereco));
-        tabela.put("+", new Simbolo(SUM, "+", ++endereco));
-        tabela.put("-", new Simbolo(SUB, "-", ++endereco));
-        tabela.put("/", new Simbolo(DIV, "/", ++endereco));
-        tabela.put("*", new Simbolo(MULT, "*", ++endereco));
-        tabela.put("TRUE", new Simbolo(TRUE, "TRUE", ++endereco));
-        tabela.put("FALSE", new Simbolo(FALSE, "FALSE", ++endereco));
-        tabela.put("boolean", new Simbolo(BOOLEAN, "boolean", ++endereco));
-        tabela.put("final", new Simbolo(FINAL, "final", ++endereco));
-        tabela.put("string", new Simbolo(STRING, "string", ++endereco));
-        tabela.put("while", new Simbolo(WHILE, "while", ++endereco));
-        tabela.put("&&", new Simbolo(AND, "&&", ++endereco));
-        tabela.put("!", new Simbolo(NEG, "!", ++endereco));
-        tabela.put("begin", new Simbolo(BEGIN, "begin", ++endereco));
-        tabela.put("endwhile", new Simbolo(ENDWHILE, "endwhile", ++endereco));
-        tabela.put("endif", new Simbolo(ENDIF, "endif", ++endereco));
-        tabela.put("endelse", new Simbolo(ENDELSE, "endelse", ++endereco));
-        tabela.put("=", new Simbolo(COMPARA, "=", ++endereco));
+        hash.put("if", new Simbolo(IF, "if", ++endereco));
+        hash.put("int", new Simbolo(INT, "int", ++endereco));
+        hash.put("byte", new Simbolo(BYTE, "byte", ++endereco));
+        hash.put("writeln", new Simbolo(WRITELN, "writeln", ++endereco));
+        hash.put("write", new Simbolo(WRITE, "write", ++endereco));
+        hash.put("readln", new Simbolo(READLN, "readln", ++endereco));
+        hash.put("else", new Simbolo(ELSE, "else", ++endereco));
+        hash.put("(", new Simbolo(APAR, "(", ++endereco));
+        hash.put(")", new Simbolo(FPAR, ")", ++endereco));
+        hash.put(";", new Simbolo(PONTOVIRGULA, ";", ++endereco));
+        hash.put("<-", new Simbolo(ATT, "<-", ++endereco));
+        hash.put("||", new Simbolo(OR, "||", ++endereco));
+        hash.put(">", new Simbolo(MAIOR, ">", ++endereco));
+        hash.put("<", new Simbolo(MENOR, "<", ++endereco));
+        hash.put(">=", new Simbolo(MAIORIG, ">=", ++endereco));
+        hash.put("<=", new Simbolo(MENORIG, "<=", ++endereco));
+        hash.put("!=", new Simbolo(DIFF, "!=", ++endereco));
+        hash.put(",", new Simbolo(VIRGULA, ",", ++endereco));
+        hash.put("+", new Simbolo(SUM, "+", ++endereco));
+        hash.put("-", new Simbolo(SUB, "-", ++endereco));
+        hash.put("/", new Simbolo(DIV, "/", ++endereco));
+        hash.put("*", new Simbolo(MULT, "*", ++endereco));
+        hash.put("TRUE", new Simbolo(TRUE, "TRUE", ++endereco));
+        hash.put("FALSE", new Simbolo(FALSE, "FALSE", ++endereco));
+        hash.put("boolean", new Simbolo(BOOLEAN, "boolean", ++endereco));
+        hash.put("final", new Simbolo(FINAL, "final", ++endereco));
+        hash.put("string", new Simbolo(STRING, "string", ++endereco));
+        hash.put("while", new Simbolo(WHILE, "while", ++endereco));
+        hash.put("&&", new Simbolo(AND, "&&", ++endereco));
+        hash.put("!", new Simbolo(NEG, "!", ++endereco));
+        hash.put("begin", new Simbolo(BEGIN, "begin", ++endereco));
+        hash.put("endwhile", new Simbolo(ENDWHILE, "endwhile", ++endereco));
+        hash.put("endif", new Simbolo(ENDIF, "endif", ++endereco));
+        hash.put("endelse", new Simbolo(ENDELSE, "endelse", ++endereco));
+        hash.put("=", new Simbolo(COMPARA, "=", ++endereco));
     }
 
     /**/
     public String pesquisa(String lexema) {
-        Simbolo aux = tabela.get(lexema);
+        Simbolo aux = hash.get(lexema);
         return ((aux == null) ? "NULL" : "" + aux.getEnd());
     }
 
-    public Simbolo inserirID(String lexema) {
+    public Simbolo insereID(String lexema) {
         Simbolo simbolo = new Simbolo(ID, lexema, ++endereco);
-        tabela.put(lexema, simbolo);
-        return tabela.get(lexema);
+        hash.put(lexema, simbolo);
+        return hash.get(lexema);
     }
 
-    public Simbolo buscaSimbolo(String lexema) {
-        Simbolo aux = tabela.get(lexema);
-        return ((aux == null) ? null : tabela.get(lexema));
-
-    }
-
-    public Simbolo inserirConst(String lexema) {
+    public Simbolo insereConstante(String lexema) {
         Simbolo simbolo = new Simbolo(VALORCONST, lexema, ++endereco);
-        tabela.put(lexema, simbolo);
-        return tabela.get(lexema);
+        hash.put(lexema, simbolo);
+        return hash.get(lexema);
     }
-
-    /*
-     * public static void main(String[] args) { TabelaDeSimbolos tbl = new
-     * TabelaDeSimbolos();
-     * 
-     * System.out.println(tbl.pesquisa("a"));
-     * System.out.println(tbl.pesquisa("FI"));
-     * System.out.println(tbl.pesquisa("iF"));
-     * System.out.println(tbl.buscaSimbolo("&&").getLexema());
-     * System.out.println(tbl.buscaSimbolo("&&").getToken());
-     * System.out.println(tbl.pesquisa("And"));
-     * System.out.println(tbl.buscaSimbolo("for"));
-     * System.out.println(tbl.buscaSimbolo("<")); tbl.inserirID("teste");
-     * System.out.println(tbl.pesquisa("boolean"));
-     * System.out.println(tbl.pesquisa("teste")); tbl.inserirID("TEstE");
-     * System.out.println(tbl.pesquisa("teste")); }
-     */
 }
