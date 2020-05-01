@@ -311,7 +311,7 @@ public class AnalisadorLexico {
       simb = null;
       if (!ehEOF) {
          // Seleciona o simbolo da tabela de simbolos caso ele ja esteja na tabela
-         if (simbolos.tabela.get(lexema) != null) {
+         if (simbolos.tabela.get(lexema) != null) {//TRROOOCAAAARRRR
             simb = simbolos.tabela.get(lexema);
          } else if (ehLetra(lexema.charAt(0)) || lexema.charAt(0) == '_') {
             // Insere um novo ID na tabela de simbolos
