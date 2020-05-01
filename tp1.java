@@ -3,27 +3,32 @@ import java.util.List;
 import java.io.*;
 import java.util.Scanner;
 import java.util.HashMap;
+/*
+
+Alunos: Iann Pedroza Torres Trajano e João Lucas da Silveira Melo
+Matrícula: 587478 e 586573
+TP1 - Analisador Léxico
+*/
 
 public class tp1 {
     public static void main(String[] args) throws Exception {
-        try {
-            //Criação dos objetos Tabela de Simbolos, simbolo e analisador lexico
-            TabelaDeSimbolos tabela = new TabelaDeSimbolos();
-            AnalisadorLexico analisador = new AnalisadorLexico(tabela);
-            Simbolo simbolo = new Simbolo();
-            Scanner s = new Scanner(System.in);
-            s.useDelimiter(""); // Delimitador para que a classe scanner consiga ler char por char
-            
-            while (s.hasNext()) {// enquanto existir entrada na scanner
-                simbolo = analisador.analisaLex(s); //metodo principal de analisar lexema
-                if (simbolo != null) {
-                    System.out.println(simbolo.getToken() + " " + simbolo.getLexema());
-                }
+        // Criação dos objetos Tabela de Simbolos, simbolo e analisador lexico
+        TabelaDeSimbolos tabela = new TabelaDeSimbolos();
+        AnalisadorLexico analisador = new AnalisadorLexico(tabela);
+        Simbolo simbolo = new Simbolo();
+        Scanner s = new Scanner(System.in);
+        s.useDelimiter(""); // Delimitador para que a classe scanner consiga ler char por char
+
+        while (s.hasNext()) {// enquanto existir entrada na scanner
+            try {
+                simbolo = analisador.analisaLex(s); // metodo principal de analisar lexema
+            } catch (Exception e) {
             }
-            System.out.println(analisador.linha+" linhas compiladas.") ;
-        } catch (IOException e) {
-            System.err.format("IOException: %s%n", e);
+            if (simbolo != null) {
+                System.out.println(simbolo.getToken() + " " + simbolo.getLexema());
+            }
         }
+        System.out.println(analisador.linha + " linhas compiladas.");
     }
 
 }
@@ -43,7 +48,8 @@ class AnalisadorLexico {
     public boolean ehComentario = false;
     public boolean ehEOF = false;
     public static final int estadoInicial = 0;
-    public static final char validos[] = { ' ', '_', '.', ',', ';', '&', ':', '(', ')', '[', ']', '{', '}', '+', '-', '"', '\'', '/', '!', '?', '>', '<', '=', '\n' };
+    public static final char validos[] = { ' ', '_', '.', ',', ';', '&', ':', '(', ')', '[', ']', '{', '}', '+', '-',
+            '"', '\'', '/', '!', '?', '>', '<', '=', '\n' };
 
     Simbolo analisaLex(Scanner s) throws Exception {
         int estadoAtual = estadoInicial;
@@ -52,75 +58,77 @@ class AnalisadorLexico {
         while (estadoAtual != estadoFinal) {
             switch (estadoAtual) {
                 case 0:
-                    //Se devolucao == True não le mais um caracter pois existe um caracter devolvido a ser analisado
+                    // Se devolucao == True não le mais um caracter pois existe um caracter
+                    // devolvido a ser analisado
                     if (devolucao == false) {
                         c = s.next().charAt(0);
                     }
                     devolucao = false;
 
                     // Quebra de linha no arquivo
-                    if (c == '\n') { 
+                    if (c == '\n') {
                         linha++;
                     } else if (ehLetra(c) || c == '_') {
-                    //Inicio de identificador
+                        // Inicio de identificador
                         lexema += c;
                         estadoAtual = 5;
-                    } else if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')' || c == ';' || c == ',' || c == '=') {
-                    // tokens que possuem somente 1 caractere
+                    } else if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')' || c == ';' || c == ','
+                            || c == '=') {
+                        // tokens que possuem somente 1 caractere
                         lexema += c;
                         estadoAtual = estadoFinal;
                     } else if (c == 8 || c == 9 || c == 11 || c == 13 || c == 32) {
-                    // lendo "lixo" espaço em branco, tabs vertical e horizontal
+                        // lendo "lixo" espaço em branco, tabs vertical e horizontal
                         estadoAtual = estadoInicial;
                     } else if (c == '/') {
-                    // Pode ser inicio de comentário ou apenas um '/'
+                        // Pode ser inicio de comentário ou apenas um '/'
                         lexema += c;
                         estadoAtual = 14;
                     } else if (c == '>' || c == '!') {
-                    // Possui 4 variacoes: '>' e '>=' e '!' e '!=', vai para o proximo estado para
-                    // decidir qual o
-                    // token
+                        // Possui 4 variacoes: '>' e '>=' e '!' e '!=', vai para o proximo estado para
+                        // decidir qual o
+                        // token
                         lexema += c;
                         estadoAtual = 2;
                     } else if (c == '<') {
-                    // Possuo 3 variacoes: '<', '<=' e '<-'
+                        // Possuo 3 variacoes: '<', '<=' e '<-'
                         lexema += c;
                         estadoAtual = 6;
                     } else if (c == '&') {
-                    // Validar token '&&'
+                        // Validar token '&&'
                         lexema += c;
                         estadoAtual = 11;
                     } else if (c == '"') {
-                    // Inicia processo de validar string
+                        // Inicia processo de validar string
                         lexema += c;
                         estadoAtual = 12;
                     } else if (ehDigito(c)) {
-                    // Inicia processo de validar constantes
+                        // Inicia processo de validar constantes
                         if (c == '0') {
-                        // Hexadecimal ou número iniciado de 0
+                            // Hexadecimal ou número iniciado de 0
                             lexema += c;
                             estadoAtual = 7;
                         } else {
-                        // Numero que nao comeca com 0
+                            // Numero que nao comeca com 0
                             lexema += c;
                             estadoAtual = 10;
                         }
                     } else if (c == 65535) {
-                    // Possivel eof
+                        // Possivel eof
                         estadoAtual = estadoFinal;
                         lexema += c;
                         ehEOF = true;
                     } else if (c == '|') {
-                    // Validar OR '||'
+                        // Validar OR '||'
                         lexema += c;
-                        estadoAtual = 17;
+                        estadoAtual = 3;
                     } else {
-                    // Caracteres invalidos 
-                        printErrorCaracter();
+                        // Caracteres invalidos
+                        erroCaractere();
                     }
                     break;
                 case 2:
-                // Valida '<=', '<', '!=', '!'
+                    // Valida '<=', '<', '!=', '!'
                     c = s.next().charAt(0);
 
                     if (c == '=') {
@@ -133,30 +141,16 @@ class AnalisadorLexico {
 
                     break;
                 case 3:
-                   /* IMPLEMENTADO ERRADO
-                   c = s.next().charAt(0);
-                    
-                    if (c == '=') {
-                        lexema += c;
-                        estadoAtual = estadoFinal;
-                    } else if (c == '>') {
-                        lexema += c;
-                        estadoAtual = estadoFinal;
-                    } else {
-                        estadoAtual = estadoFinal;
-                        devolucao = true;
-                    }*/
-                    break;
-                case 4:
-                    /*c = s.next().charAt(0);
+                    c = s.next().charAt(0);
 
-                    if (c == '\'') {
+                    if (c == '|') {
                         lexema += c;
                         estadoAtual = estadoFinal;
                     } else {
                         estadoAtual = estadoFinal;
                         devolucao = true;
-                    }*/
+                    }
+
                     break;
                 case 5:
                     c = s.next().charAt(0);
@@ -188,11 +182,11 @@ class AnalisadorLexico {
                         lexema += c;
                         estadoAtual = 8;
                     } else if (ehDigito(c)) {
-                    // Numero iniciado de 0
+                        // Numero iniciado de 0
                         lexema += c;
                         estadoAtual = 10;
                     } else {
-                    // Numero 0
+                        // Numero 0
                         estadoAtual = estadoFinal;
                         devolucao = true;
                     }
@@ -206,7 +200,7 @@ class AnalisadorLexico {
                         estadoAtual = 9;
                     } else {
                         lexema += c;
-                        printError();
+                        erroLexema();
                     }
                     break;
                 case 9:
@@ -218,7 +212,7 @@ class AnalisadorLexico {
                         estadoAtual = estadoFinal;
                     } else {
                         lexema += c;
-                        printError();
+                        erroLexema();
                     }
                     break;
                 case 10:
@@ -252,23 +246,17 @@ class AnalisadorLexico {
                         lexema += c;
                         estadoAtual = estadoFinal;
                     } else if (c == '\n' || c == '\r') {
-                        printError();
+                        erroLexema();
                     } else if (ehValido(c)) {
                         lexema += c;
                     } else {
                         lexema += c;
-                        printErrorCaracter();
+                        erroCaractere();
                     }
-                    break;
-                case 13:
-                    c = s.next().charAt(0);
-                    // checkEOF(c);
-
                     break;
                 case 14:
                     // Cases 14, 15 e 16 validam os comentários e o token '/'
                     c = s.next().charAt(0);
-                    // checkEOF(c);
 
                     if (c != '*') {
                         estadoAtual = estadoFinal;
@@ -280,18 +268,16 @@ class AnalisadorLexico {
                     break;
                 case 15:
                     c = s.next().charAt(0);
-                    // checkEOF(c);
-                    // System.out.println(c);
+
                     if (c == '*') {
                         estadoAtual = 16;
-                    }
-                    else if(c == '\n'){
-                       linha++;
+                    } else if (c == '\n') {
+                        linha++;
                     }
                     break;
                 case 16:
                     c = s.next().charAt(0);
-                    // checkEOF(c);
+
                     if (c == '*') {
                         estadoAtual = 16;
                     } else if (c == '/') {
@@ -302,17 +288,6 @@ class AnalisadorLexico {
                         estadoAtual = 15;
                     }
                     break;
-
-                case 17:
-                    c = s.next().charAt(0);
-
-                    if (c == '|') {
-                        estadoAtual = estadoFinal;
-                    } else {
-                        estadoAtual = estadoFinal;
-                        devolucao = true;
-                    }
-
             }
         }
         simb = null;
@@ -333,14 +308,14 @@ class AnalisadorLexico {
                         if (lexema.length() > 2 && lexema.charAt(1) == 'x') {
                             // Constantes hexa sao do tipo 0xFF -> 4 caracteres
                             if (lexema.length() == 4) {
-                                //Insere a constante HEXA
+                                // Insere a constante HEXA
                                 simb = tabela.insereConstante(lexema);
                             }
                         } else {
                             // Verifica se possui algum caracter nao numerico
                             for (int i = 0; i < lexema.length(); i++) {
                                 if (!ehDigito(lexema.charAt(i))) {
-                                    printError();
+                                    erroLexema();
                                 }
                             }
 
@@ -352,7 +327,7 @@ class AnalisadorLexico {
                     // Verifica se possui algum caracter nao numerico
                     for (int i = 0; i < lexema.length(); i++) {
                         if (!ehDigito(lexema.charAt(i))) {
-                            printError();
+                            erroLexema();
                         }
                     }
 
@@ -367,7 +342,7 @@ class AnalisadorLexico {
                 lexema = x;
                 simb = tabela.insereConstante(lexema);
             } else {
-                printError();
+                erroLexema();
             }
         }
 
@@ -399,31 +374,18 @@ class AnalisadorLexico {
         return (ehLetra(c) || ehDigito(c) || new String(validos).indexOf(c) >= 0);
     }
 
-    public void printError() {
+    public void erroLexema() {
         System.out.println(linha + 1);
         System.out.println("Lexema nao identificado [" + lexema + "].");
         System.exit(1);
     }
 
-    public void printErrorCaracter() {
+    public void erroCaractere() {
         System.out.println(linha + 1);
         System.out.println("caractere invalido.");
         System.exit(1);
     }
 
-    /*
-     * public void printErrorHexa() { System.out.println("Erro na linha: " +
-     * (linha+1) + ". Lexema nao reconhecido: [" + lexema +""+ c +"]");
-     * System.exit(1); }
-     */ // RETIRAR DO ANALIZADOR LEXICOOOOOOOOOOOOOOO
-
-    void checkEOF(char c) {
-        if (this.ehEOF || c == 65535) {
-            System.out.println(linha);
-            System.err.println("fim de arquivo nao esperado.");
-            System.exit(0);
-        }
-    }
 }
 
 class Simbolo {
