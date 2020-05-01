@@ -198,7 +198,8 @@ public class AnalisadorLexico {
                   lexema += c;
                   estadoAtual = 9;
                } else {//VALIDAR ISSO
-                  //printErrorHexa();
+                  lexema += c;
+                  printError();
                }
                break;
             case 9:
@@ -211,7 +212,8 @@ public class AnalisadorLexico {
                   estadoAtual = estadoFinal;
                   devolve = false;
                }else {
-                  //printErrorHexa();
+                  lexema += c;
+                  printError();
                }
                break;
             case 10:
@@ -245,12 +247,16 @@ public class AnalisadorLexico {
                c = s.next().charAt(0);
                //checkEOF(c);
             
-               if (ehValido(c)) {
-                  lexema += c;
-                  estadoAtual = 13;
-               }else if (c == '"') {
+               if (c == '"') {
                   lexema += c;
                   estadoAtual = estadoFinal;
+               } else if (c == '\n' || c== '\r') {
+                  printError();
+               } else if (ehValido(c)) {
+                  lexema += c;
+               }else {
+                  lexema += c;
+                  printErrorCaracter();
                }
                break;
             case 13:
