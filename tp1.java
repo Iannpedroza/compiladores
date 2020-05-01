@@ -241,7 +241,7 @@ class AnalisadorLexico {
                 case 12:
                     // Validação de strings
                     c = s.next().charAt(0);
-
+                    verificaEOF(c);
                     if (c == '"') {
                         lexema += c;
                         estadoAtual = estadoFinal;
@@ -257,7 +257,7 @@ class AnalisadorLexico {
                 case 14:
                     // Cases 14, 15 e 16 validam os comentários e o token '/'
                     c = s.next().charAt(0);
-
+                    
                     if (c != '*') {
                         estadoAtual = estadoFinal;
                         devolucao = true;
@@ -268,7 +268,7 @@ class AnalisadorLexico {
                     break;
                 case 15:
                     c = s.next().charAt(0);
-
+                    verificaEOF(c);
                     if (c == '*') {
                         estadoAtual = 16;
                     } else if (c == '\n') {
@@ -277,7 +277,7 @@ class AnalisadorLexico {
                     break;
                 case 16:
                     c = s.next().charAt(0);
-
+                    verificaEOF(c);
                     if (c == '*') {
                         estadoAtual = 16;
                     } else if (c == '/') {
@@ -348,6 +348,13 @@ class AnalisadorLexico {
 
         return simb;
     }
+
+    void verificaEOF(char c) {
+        if (this.ehEOF || c == 65535) {
+           System.err.println(this.linha + "\nfim de arquivo nao esperado.");
+           System.exit(0);
+        }
+     }
 
     public static boolean ehHexa(char c) {
         if (c >= 'A' && c <= 'F' || ehDigito(c)) {
