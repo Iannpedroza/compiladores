@@ -20,6 +20,7 @@ public class tp1 {
                     System.out.println(simbolo.getToken() + " " + simbolo.getLexema());
                 }
             }
+            System.out.println(analisador.linha+" linhas compiladas.") ;
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
         }
@@ -37,7 +38,7 @@ class AnalisadorLexico {
     char c;
     String lexema = "";
     Simbolo simb;
-    public static int linha = 0;
+    public int linha = 0;
     public boolean devolucao = false;
     public boolean ehComentario = false;
     public boolean ehEOF = false;
