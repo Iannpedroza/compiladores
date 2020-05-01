@@ -284,6 +284,9 @@ class AnalisadorLexico {
                     if (c == '*') {
                         estadoAtual = 16;
                     }
+                    else if(c == '\n'){
+                       linha++;
+                    }
                     break;
                 case 16:
                     c = s.next().charAt(0);
