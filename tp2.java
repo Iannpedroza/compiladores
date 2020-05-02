@@ -98,70 +98,99 @@ class AnalisadorSintatico {
       boolean condGC;
       try {
          checkEOF();
-         if (simbolo.getToken() == tabela.INT || simbolo.getToken() == tabela.BYTE
-               || simbolo.getToken() == tabela.BOOLEAN || simbolo.getToken() == tabela.STRING) {
-
-            if (simbolo.getToken() == tabela.INT) {
-               casaToken(tabela.INT);
+         if (s.getToken() == tabela.INT || s.getToken() == tabela.BYTE || s.getToken() == tabela.BOOLEAN || s.getToken() == tabela.STRING) {
+            
+            if(s.getToken() == tabela.INT){
+               casaToken(tabela.INT); 
             }
-            if (simbolo.getToken() == tabela.BYTE) {
+            if(s.getToken() == tabela.BYTE){
                casaToken(tabela.BYTE);
             }
-            if (simbolo.getToken() == tabela.BOOLEAN) {
+            if(s.getToken() == tabela.BOOLEAN){
                casaToken(tabela.BOOLEAN);
             }
-            if (simbolo.getToken() == tabela.STRING) {
+            if(s.getToken() == tabela.STRING){
                casaToken(tabela.STRING);
             }
+            
 
-            if (simbolo.getToken() == tabela.ID) {
+            if(s.getToken() == tabela.ID ){
                casaToken(tabela.ID);
-               if (simbolo.getToken() == tabela.PONTOVIRGULA) {
+               if(s.getToken() == tabela.PONTOVIRGULA ){
                   casaToken(tabela.PONTOVIRGULA);
-                  // JOAO FAZER OQUE? ACABOU? ACHOU O PONTO E VIRGULA
-               } else if (simbolo.getToken() == tabela.ATT || simbolo.getToken() == tabela.VIRGULA) {
-                  while (simbolo.getToken() == tabela.ATT || simbolo.getToken() == tabela.VIRGULA) {
-                     if (simbolo.getToken() == tabela.ATT) {
+                  //JOAO FAZER OQUE? ACABOU? ACHOU O PONTO E VIRGULA
+               } 
+               else if(s.getToken() == tabela.ATT ||s.getToken() == tabela.VIRGULA  ) {
+                  while(s.getToken() == tabela.ATT ||s.getToken() == tabela.VIRGULA ){
+                     if(s.getToken() == tabela.ATT){
                         casaToken(tabela.ATT);
-                        if (simbolo.getToken() == tabela.CONSTANTE) {
-                           casaToken(tabela.CONSTANTE);
+                        if(s.getToken() == tabela.CONSTANTE){
                            CONST();
-                        } else {
-                           // ERRO NAO ATRIBUI NENHUMA CONSTANTE
+                           casaToken(tabela.CONSTANTE);
+                        }else{
+                           //ERRO NAO ATRIBUI NENHUMA CONSTANTE
                         }
-                        if (simbolo.getToken() == tabela.ATT) {
-                           // ERRO ,DEPOIS DE CONSTANTE VEIO ATRIBUIÇÃO
+                        if(s.getToken() == tabela.ATT){
+                           //ERRO ,DEPOIS DE CONSTANTE VEIO ATRIBUIÇÃO
                         }
 
-                     } else if (simbolo.getToken() == tabela.VIRGULA) {
+                     }else if(s.getToken() == tabela.VIRGULA){
                         casaToken(tabela.VIRGULA);
-                        if (simbolo.getToken() == tabela.ID) {
+                        if(s.getToken() == tabela.ID){
                            casaToken(tabela.ID);
-                        } else {
-                           // ERRO , DEPOIS DA VIRGULA SÓ PODE VIR ID
+                        }else{
+                           //ERRO , DEPOIS DA VIRGULA SÓ PODE VIR ID
                         }
                      }
                   }
-                  if (simbolo.getToken() != tabela.PONTOVIRGULA) {
-                     // ERRO , NAO FINALIZOU LISTA DE IDS
+                  if(s.getToken() == tabela.PONTOVIRGULA){
+                     casaToken(tabela.PONTOVIRGULA);
+                  }
+                  else{
+                     //ERRO, NAO FINALIZADOU A LISTA DE IDS COM ;
                   }
                }
+              
 
-            } else {
-               // ERRO PQ NAO ACHOU ID DPS DE INT,BYTE,BOOLEAN OU STRING
+            }
+            else{
+               //ERRO PQ NAO ACHOU ID DPS DE INT,BYTE,BOOLEAN OU STRING
             }
 
-         } else if (simbolo.getToken() == tabela.FINAL) {
+         }else if(s.getToken() == tabela.FINAL){
             // se for 'final' ao invez de int,byte,boolean ou string
-
-         } else {
-            // ERRROOOOOU MIZERAVI
+            casaToken(tabela.FINAL);
+            if(s.getToken() == tabela.ID){
+               casaToken(tabela.ID);
+               if(s.getToken() == tabela.ATT){
+                  casaToken(tebla.ATT);
+                  if(s.getToken() == tabela.CONSTANTE){
+                     CONST();
+                     casaToken(tabela.CONSTANTE);
+                     if(s.getToken() == tabela.PONTOVIRGULA){
+                        casaToken(tabela.PONTOVIRGULA);
+                     }
+                  }
+                  else{
+                     //ERRO, NAO VEIO CONSTANTE DEPOIS DE ATRIBUIÇÃO
+                  }
+               } 
+               else{
+                  //ERRO NAO VEIO ATRIBUIÇÃO DEPOIS DE ID QUE ERA A UNICA OPÇÃO POSSIVEL
+               }
+            }
+            else{
+               //ERRO , NÃO VEIO ID DEPOIS DE FINAL QUE É A UNICA OPÇÃO POSSIVEL
+            }
+         
          }
+         else{
+            //ERRROOOOOU, NAO VEIO NADA DE DECLARAÇÃO
+         }   
 
-      } catch (Exception e) {
-      } // FIM TRY
+      }catch(Exception e){} // FIM TRY
 
-   }// FIM D
+   }//FIM D   
 
    // D' -> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV |
    // '['num']']}
@@ -700,8 +729,8 @@ class AnalisadorSintatico {
    }
 
    boolean ehDeclaracao() {
-      return (simbolo != null && (simbolo.getToken() == tabela.VAR || simbolo.getToken() == tabela.CONST
-            || simbolo.getToken() == tabela.INTEGER || simbolo.getToken() == tabela.CHAR));
+      return (s != null && (s.getToken() == tabela.INT || s.getToken() == tabela.BYTE || s.getToken() == tabela.BOOLEAN
+            || s.getToken() == tabela.STRING) || s.getToken() == tabela.FINAL  );
    }
 
    boolean ehComando() {
