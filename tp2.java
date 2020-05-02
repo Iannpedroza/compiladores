@@ -7,13 +7,7 @@ import java.util.HashMap;
 public class tp2 {
    public static void main(String[] args) throws Exception {
       // Criação dos objetos Tabela de Simbolos, simbolo e analisador lexico
-
-      Scanner s = new Scanner(System.in);
-      simbolo.useDelimiter(""); // Delimitador para que a classe scanner consiga ler char por char
-      TabelaDeSimbolos tabela = new TabelaDeSimbolos();
-      AnalisadorLexico lexico = new AnalisadorLexico(tabela);
-      Simbolo simbolo = new Simbolo();
-      AnalisadorSintatico sintatico = new AnalisadorSintatico(s);
+      AnalisadorSintatico sintatico = new AnalisadorSintatico();
       sintatico.S();
 
    }
@@ -24,17 +18,18 @@ class AnalisadorSintatico {
    AnalisadorLexico lexico;
    TabelaDeSimbolos tabela;
    Simbolo simbolo, simboloParaAnalise;
-
-   AnalisadorSintatico(Scanner s) {
+   public static Scanner s;
+   AnalisadorSintatico() {
       try {
-         this.arquivo = arquivo;
+         s = new Scanner(System.in);
+         s.useDelimiter(""); // Delimitador para que a classe scanner consiga ler char por char
+         
          tabela = new TabelaDeSimbolos();
          lexico = new AnalisadorLexico(tabela);
-         rotuloPJ = new Rotulo();
 
-         simbolo = lexico.analisarLexema(lexico.devolve, arquivo);
+         simbolo = lexico.analisarLexema(s);
          if (simbolo == null) { // comentario
-            simbolo = lexico.analisarLexema(lexico.devolve, arquivo);
+            simbolo = lexico.analisarLexema(s);
          }
       } catch (Exception e) {
          checkEOF();
@@ -47,7 +42,7 @@ class AnalisadorSintatico {
          if (simbolo != null) {
             if (simbolo.getToken() == token) {
                simboloParaAnalise = simbolo;
-               simbolo = lexico.analisarLexema(lexico.devolve, arquivo);
+               simbolo = lexico.analisarLexema(s);
             } else {
                if (lexico.ehEOF) {
                   System.err.println((lexico.linha + 1) + ":Fim de Arquivo nao esperado.");
@@ -74,7 +69,7 @@ class AnalisadorSintatico {
                D();
             }
 
-            while() {
+            while(ehComando()) {
                checkEOF();
                C();
             } 
@@ -88,13 +83,6 @@ class AnalisadorSintatico {
 
    // D -> (int | byte | boolean | string) id [<- CONST]  {,id [<- CONST]}  ';' |  final id (<- CONST) ';'
    void D() {
-      Simbolo simboloEconst = new Simbolo();
-      Simbolo simboloString = new Simbolo();
-      Simbolo simboloId = new Simbolo();
-      Simbolo simboloConst = new Simbolo();
-      Simbolo c = new Simbolo();
-      boolean condicao;
-      boolean condGC;
       try {
          checkEOF();
          if (simbolo.getToken() == tabela.INT || simbolo.getToken() == tabela.BYTE || simbolo.getToken() == tabela.BOOLEAN || simbolo.getToken() == tabela.STRING) {
@@ -151,162 +139,9 @@ class AnalisadorSintatico {
 
    }//FIM D   
 
-   // D' -> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV |
-   // '['num']']}
-   Simbolo D1(Simbolo id) {
-      Simbolo D1 = new Simbolo();
-      Simbolo temp;
-      Simbolo simboloEvet = new Simbolo();
-      Simbolo simboloId = new Simbolo();
-      boolean condGC = false;
-      try {
-         checkEOF();
-         if (simbolo.getToken() == tabela.ATT || simbolo.getToken() == tabela.ACOL
-               || simbolo.getToken() == tabela.VIR) {
-            if (simbolo.getToken() == tabela.ATT) {
-               casaToken(tabela.ATT);
-               temp = CONSTV();
-               D1 = temp;
-               if (simbolo.getToken() == tabela.VIR) {
-                  while (simbolo.getToken() != tabela.PV) {
-                     casaToken(tabela.VIR);
-                     casaToken(tabela.ID);
-                     simboloId = simboloParaAnalise;
-                     if (simbolo.getToken() == tabela.ACOL || simbolo.getToken() == tabela.ATT) {
-                        if (simbolo.getToken() == tabela.ACOL) {
-                           casaToken(tabela.ACOL);
-                           casaToken(tabela.VALORCONST);
-                           simboloEvet = simboloParaAnalise;
-                           casaToken(tabela.FCOL);
-                        } else {
-                           casaToken(tabela.ATT);
-                           temp = CONSTV();
-                        }
-                     }
-                  }
-               }
-               /*
-                * if(condGC == false){ geracaoCodigo4(retornoD1, id); }
-                */
-            } else if (simbolo.getToken() == tabela.VIR) {
-               D1.setToken((byte) 999); // pois assim numa concatenacao retorna algo <> de -1
-               while (simbolo.getToken() != tabela.PV) {
-                  casaToken(tabela.VIR);
-                  casaToken(tabela.ID);
-                  simboloId = simboloParaAnalise;
-                  if (simbolo.getToken() == tabela.ACOL || simbolo.getToken() == tabela.ATT) {
-                     if (simbolo.getToken() == tabela.ACOL) {
-                        casaToken(tabela.ACOL);
-                        casaToken(tabela.VALORCONST);
-                        simboloEvet = simboloParaAnalise;
-
-                        casaToken(tabela.FCOL);
-
-                     } else {
-                        casaToken(tabela.ATT);
-                        temp = CONSTV();
-
-                     }
-                  }
-
-               }
-            } else if (simbolo.getToken() == tabela.ACOL) {
-               casaToken(tabela.ACOL);
-               casaToken(tabela.VALORCONST);
-               simboloEvet = simboloParaAnalise;
-               D1 = simboloEvet;
-
-               casaToken(tabela.FCOL);
-
-               if (simbolo.getToken() == tabela.VIR) {
-                  while (simbolo.getToken() != tabela.PV) {
-                     casaToken(tabela.VIR);
-                     casaToken(tabela.ID);
-
-                     simboloId = simboloParaAnalise;
-
-                     if (simbolo.getToken() == tabela.ACOL || simbolo.getToken() == tabela.ATT) {
-                        condGC = acaoSemantica9();
-                        if (simbolo.getToken() == tabela.ACOL) {
-                           casaToken(tabela.ACOL);
-                           casaToken(tabela.VALORCONST);
-                           simboloEvet = simboloParaAnalise;
-                           // simboloEvet = E();
-
-                           casaToken(tabela.FCOL);
-
-                        } else {
-                           casaToken(tabela.ATT);
-                           temp = CONSTV();
-
-                        }
-                     }
-
-                  }
-               }
-            }
-         }
-      } catch (Exception e) {
-         checkEOF();
-         System.err.println(e.toString());
-      }
-      return D1;
-   }
-
-   // CONSTV -> 0x(hexa)(hexa) | char | E
-   Simbolo CONSTV() {
-      Simbolo constvSimbolo = new Simbolo();
-      try {
-         checkEOF();
-         if (simbolo.getToken() == tabela.VALORCONST) {
-            casaToken(tabela.VALORCONST);
-            constvSimbolo = simboloParaAnalise; // NOVA acaoSemantica44 e //acaoSemantica45 sera que da certo?
-            // constvSimbolo.setTipo(simboloParaAnalise.getTipo()); // acaoSemantica44 e
-            // //acaoSemantica45
-         } else {
-            constvSimbolo = E(); // acaoSemantica43
-         }
-      } catch (Exception e) {
-         checkEOF();
-         System.err.println(e.toString());
-      }
-      return constvSimbolo;
-   }
-
-   // CONSTV' -> 0x(hexa)(hexa) | char | [-] num
-   void CONSTV1() {
-      try {
-         checkEOF();
-         if (simbolo.getToken() == tabela.VALORCONST) { // @TODO Como pegar o 0 ?
-            casaToken(tabela.VALORCONST); // HEXA
-            // casaToken(tabela.X); // @TODO Como pegar o X ?
-            // casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
-            // casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
-         } else if (simbolo.getToken() == tabela.CHAR) {
-            casaToken(tabela.CHAR);
-         } else if (simbolo.getToken() == tabela.SUB || simbolo.getToken() == tabela.VALORCONST) {
-            if (simbolo.getToken() == tabela.SUB) {
-               casaToken(tabela.SUB);
-            }
-            casaToken(tabela.VALORCONST);
-         }
-      } catch (Exception e) {
-         checkEOF();
-         System.err.println(e.toString());
-      }
-   }
-
    // C -> (id <- E)';' | while '(' E ')'  (C) | while '(' E ')' begin {C} endwhile | if '(' E ')' (C |C')  | ';' | readln '('id')'  ';'
    // | write '(' E {, E}')' ';'| writeln '(' E {, E} ')' ';'
    void C() {
-      Simbolo simboloEfor = new Simbolo();
-      Simbolo simboloE2for = new Simbolo();
-      Simbolo simboloid2 = new Simbolo();
-      Simbolo simboloId = new Simbolo();
-      Simbolo simboloEif = new Simbolo();
-      Simbolo simboloEvet = new Simbolo();
-      Simbolo simboloEwr = new Simbolo();
-      boolean condicao;
       try {
          checkEOF();
          if (simbolo.getToken() == tabela.ID) {
@@ -321,7 +156,7 @@ class AnalisadorSintatico {
             casaToken(tabela.FECHAP);
             if (simbolo.getToken() == tabela.BEGIN){
                casaToken(tabela.BEGIN);
-               while (ehComando(){
+               while (ehComando()){
                   C();
                }
 
@@ -424,9 +259,7 @@ class AnalisadorSintatico {
    }
 
    // E -> E' {('<' | '>' | '<=' | '>=' | '<>' | '=') E'}
-   Simbolo E() {
-      Simbolo simboloE = new Simbolo();
-      Simbolo simboloE2 = new Simbolo();
+   void E() {
       try {
          checkEOF();
          simboloE = E1();
@@ -459,14 +292,15 @@ class AnalisadorSintatico {
          System.err.println(e.toString());
       }
 
-      return simboloE;
    }
 
    // E' -> [+ | -] E'' {('+' | '-' | '||' ) E''}
    Simbolo E1() {
       Simbolo simboloE1 = new Simbolo();
       Simbolo simboloE1_2 = new Simbolo();
-
+      Simbolo simboloCloneE1 = new Simbolo();
+      Simbolo simboloCloneE1_2 = new Simbolo();
+      boolean condicao;
       try {
          checkEOF();
 
@@ -480,7 +314,7 @@ class AnalisadorSintatico {
          simboloE1 = E2();
 
          while (simbolo.getToken() == tabela.SOMA || simbolo.getToken() == tabela.SUB
-               || simbolo.getToken() == tabela.OR) { 
+               || simbolo.getToken() == tabela.OR) { // POSSIVEL ERRO IANN
 
             if (simbolo.getToken() == tabela.SOMA) {
                casaToken(tabela.SOMA);
@@ -503,9 +337,7 @@ class AnalisadorSintatico {
    }
 
    // E'' -> F {('*' | '/' | '&&') F}
-   Simbolo E2() {
-      Simbolo simboloE2 = new Simbolo();
-      Simbolo simboloE2_1 = new Simbolo();
+   void E2() {
 
       try {
          checkEOF();
@@ -523,7 +355,6 @@ class AnalisadorSintatico {
                casaToken(tabela.AND);
 
             }
-            simboloE2_1 = F();
          }
 
       } catch (Exception e) {
@@ -531,12 +362,11 @@ class AnalisadorSintatico {
          System.err.println(e.toString());
       }
 
-      return simboloE2;
 
    }
 
    // F -> '(' E ')' | ! F | id | num
-   Simbolo F() {
+   void F() {
       Simbolo simboloF = new Simbolo(); // simbolo que vai ser retornado
       Simbolo simboloF1 = new Simbolo();
       try {
@@ -551,7 +381,6 @@ class AnalisadorSintatico {
             casaToken(tabela.NEG);
             simboloF1 = F();
 
-            return simboloF1;
          } else if (simbolo.getToken() == tabela.CONSTANTE) {
             casaToken(tabela.CONSTANTE);
             simboloF = new Simbolo(simboloParaAnalise.getToken(), simboloParaAnalise.getLexema(), // duvida iann
@@ -566,11 +395,8 @@ class AnalisadorSintatico {
          checkEOF();
          System.err.println(e.toString());
       }
-
-      return simboloF;
-
    }
-/**/ 
+
    void checkEOF() {
       if (lexico.ehEOF) {
          System.err.println((lexico.linha + 1) + ":Fim de arquivo nao esperado.");
@@ -584,13 +410,13 @@ class AnalisadorSintatico {
    }
 
    boolean ehDeclaracao() {
-      return (s != null && (s.getToken() == tabela.INT || s.getToken() == tabela.BYTE || s.getToken() == tabela.BOOLEAN
-            || s.getToken() == tabela.STRING) || s.getToken() == tabela.FINAL  );
+      return (simbolo != null && (simbolo.getToken() == tabela.INT || simbolo.getToken() == tabela.BYTE || simbolo.getToken() == tabela.BOOLEAN
+            || simbolo.getToken() == tabela.STRING) || simbolo.getToken() == tabela.FINAL  );
    }
 
    boolean ehComando() {
-      return (simbolo != null && (simbolo.getToken() == tabela.ID || simbolo.getToken() == tabela.FOR
-            || simbolo.getToken() == tabela.IF || simbolo.getToken() == tabela.PV || simbolo.getToken() == tabela.READLN
+      return (simbolo != null && (simbolo.getToken() == tabela.ID || simbolo.getToken() == tabela.WHILE
+            || simbolo.getToken() == tabela.IF || simbolo.getToken() == tabela.PONTOVIRGULA || simbolo.getToken() == tabela.READLN
             || simbolo.getToken() == tabela.WRITELN || simbolo.getToken() == tabela.WRITE));
    }
 
