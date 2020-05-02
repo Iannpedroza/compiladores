@@ -125,7 +125,6 @@ class AnalisadorSintatico {
                      if(s.getToken() == tabela.ATT){
                         casaToken(tabela.ATT);
                         if(s.getToken() == tabela.CONSTANTE){
-                           CONST();
                            casaToken(tabela.CONSTANTE);
                         }else{
                            //ERRO NAO ATRIBUI NENHUMA CONSTANTE
@@ -165,7 +164,6 @@ class AnalisadorSintatico {
                if(s.getToken() == tabela.ATT){
                   casaToken(tebla.ATT);
                   if(s.getToken() == tabela.CONSTANTE){
-                     CONST();
                      casaToken(tabela.CONSTANTE);
                      if(s.getToken() == tabela.PONTOVIRGULA){
                         casaToken(tabela.PONTOVIRGULA);
