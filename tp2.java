@@ -6,23 +6,16 @@ import java.util.HashMap;
 
 public class tp2 {
    public static void main(String[] args) throws Exception {
-       // Criação dos objetos Tabela de Simbolos, simbolo e analisador lexico
-       TabelaDeSimbolos tabela = new TabelaDeSimbolos();
-       AnalisadorLexico analisador = new AnalisadorLexico(tabela);
-       Simbolo simbolo = new Simbolo();
-       Scanner s = new Scanner(System.in);
-       s.useDelimiter(""); // Delimitador para que a classe scanner consiga ler char por char
+      // Criação dos objetos Tabela de Simbolos, simbolo e analisador lexico
 
-       while (s.hasNext()) {// enquanto existir entrada na scanner
-           try {
-               simbolo = analisador.analisaLex(s); // metodo principal de analisar lexema
-           } catch (Exception e) {
-           }
-           if (simbolo != null) {
-               System.out.println(simbolo.getToken() + " " + simbolo.getLexema());
-           }
-       }
-       System.out.println(analisador.linha + " linhas compiladas.");
+      Scanner s = new Scanner(System.in);
+      simbolo.useDelimiter(""); // Delimitador para que a classe scanner consiga ler char por char
+      TabelaDeSimbolos tabela = new TabelaDeSimbolos();
+      AnalisadorLexico lexico = new AnalisadorLexico(tabela);
+      Simbolo simbolo = new Simbolo();
+      AnalisadorSintatico sintatico = new AnalisadorSintatico(s);
+      sintatico.S();
+
    }
 
 }
@@ -30,25 +23,18 @@ public class tp2 {
 class AnalisadorSintatico {
    AnalisadorLexico lexico;
    TabelaDeSimbolos tabela;
-   Simbolo s, simboloParaAnalise;
-   Rotulo rotuloPJ;
-   int endereco = geracaoMemoria.contador;
-   
-   private int procFend = 0;
-   private int procTend = 0;
-   private int procExpsend = 0;
-   private int procExpend = 0;
+   Simbolo simbolo, simboloParaAnalise;
 
-   AnalisadorSintatico(BufferedReader arquivo,String arq) {
+   AnalisadorSintatico(Scanner s) {
       try {
          this.arquivo = arquivo;
          tabela = new TabelaDeSimbolos();
          lexico = new AnalisadorLexico(tabela);
          rotuloPJ = new Rotulo();
-         
-         s = lexico.analisarLexema(lexico.devolve, arquivo);
-         if (s == null) { // comentario
-            s = lexico.analisarLexema(lexico.devolve, arquivo);
+
+         simbolo = lexico.analisarLexema(lexico.devolve, arquivo);
+         if (simbolo == null) { // comentario
+            simbolo = lexico.analisarLexema(lexico.devolve, arquivo);
          }
       } catch (Exception e) {
          checkEOF();
@@ -58,10 +44,10 @@ class AnalisadorSintatico {
 
    void casaToken(byte token) {
       try {
-         if (s != null) {
-            if (s.getToken() == token) {
-               simboloParaAnalise = s;
-               s = lexico.analisarLexema(lexico.devolve, arquivo);
+         if (simbolo != null) {
+            if (simbolo.getToken() == token) {
+               simboloParaAnalise = simbolo;
+               simbolo = lexico.analisarLexema(lexico.devolve, arquivo);
             } else {
                if (lexico.ehEOF) {
                   System.err.println((lexico.linha + 1) + ":Fim de Arquivo nao esperado.");
@@ -82,7 +68,7 @@ class AnalisadorSintatico {
    // S -> {D}+{C}+
    void S() {
       try {
-         if (s != null) {
+         if (simbolo != null) {
             do {
                checkEOF();
                D();
@@ -99,8 +85,9 @@ class AnalisadorSintatico {
          System.err.println(e.toString());
       }
    }
-   
-   // D -> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
+
+   // D -> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' =
+   // '"' string '"') ';'
    void D() {
       Simbolo simboloEconst = new Simbolo();
       Simbolo simboloString = new Simbolo();
@@ -111,74 +98,70 @@ class AnalisadorSintatico {
       boolean condGC;
       try {
          checkEOF();
-         if (s.getToken() == tabela.INT || s.getToken() == tabela.BYTE || s.getToken() == tabela.BOOLEAN || s.getToken() == tabela.STRING) {
-            
-            if(s.getToken() == tabela.INT){
-               casaToken(tabela.INT); 
+         if (simbolo.getToken() == tabela.INT || simbolo.getToken() == tabela.BYTE
+               || simbolo.getToken() == tabela.BOOLEAN || simbolo.getToken() == tabela.STRING) {
+
+            if (simbolo.getToken() == tabela.INT) {
+               casaToken(tabela.INT);
             }
-            if(s.getToken() == tabela.BYTE){
+            if (simbolo.getToken() == tabela.BYTE) {
                casaToken(tabela.BYTE);
             }
-            if(s.getToken() == tabela.BOOLEAN){
+            if (simbolo.getToken() == tabela.BOOLEAN) {
                casaToken(tabela.BOOLEAN);
             }
-            if(s.getToken() == tabela.STRING){
+            if (simbolo.getToken() == tabela.STRING) {
                casaToken(tabela.STRING);
             }
-            
 
-            if(s.getToken() == tabela.ID ){
+            if (simbolo.getToken() == tabela.ID) {
                casaToken(tabela.ID);
-               if(s.getToken() == tabela.PONTOVIRGULA ){
+               if (simbolo.getToken() == tabela.PONTOVIRGULA) {
                   casaToken(tabela.PONTOVIRGULA);
-                  //JOAO FAZER OQUE? ACABOU? ACHOU O PONTO E VIRGULA
-               } 
-               else if(s.getToken() == tabela.ATT ||s.getToken() == tabela.VIRGULA  ) {
-                  while(s.getToken() == tabela.ATT ||s.getToken() == tabela.VIRGULA ){
-                     if(s.getToken() == tabela.ATT){
+                  // JOAO FAZER OQUE? ACABOU? ACHOU O PONTO E VIRGULA
+               } else if (simbolo.getToken() == tabela.ATT || simbolo.getToken() == tabela.VIRGULA) {
+                  while (simbolo.getToken() == tabela.ATT || simbolo.getToken() == tabela.VIRGULA) {
+                     if (simbolo.getToken() == tabela.ATT) {
                         casaToken(tabela.ATT);
-                        if(s.getToken() == tabela.CONSTANTE){
+                        if (simbolo.getToken() == tabela.CONSTANTE) {
                            casaToken(tabela.CONSTANTE);
                            CONST();
-                        }else{
-                           //ERRO NAO ATRIBUI NENHUMA CONSTANTE
+                        } else {
+                           // ERRO NAO ATRIBUI NENHUMA CONSTANTE
                         }
-                        if(s.getToken() == tabela.ATT){
-                           //ERRO ,DEPOIS DE CONSTANTE VEIO ATRIBUIÇÃO
+                        if (simbolo.getToken() == tabela.ATT) {
+                           // ERRO ,DEPOIS DE CONSTANTE VEIO ATRIBUIÇÃO
                         }
 
-                     }else if(s.getToken() == tabela.VIRGULA){
+                     } else if (simbolo.getToken() == tabela.VIRGULA) {
                         casaToken(tabela.VIRGULA);
-                        if(s.getToken() == tabela.ID){
+                        if (simbolo.getToken() == tabela.ID) {
                            casaToken(tabela.ID);
-                        }else{
-                           //ERRO , DEPOIS DA VIRGULA SÓ PODE VIR ID
+                        } else {
+                           // ERRO , DEPOIS DA VIRGULA SÓ PODE VIR ID
                         }
                      }
                   }
-                  if(s.getToken() != tabela.PONTOVIRGULA){
-                     //ERRO , NAO FINALIZOU LISTA DE IDS
+                  if (simbolo.getToken() != tabela.PONTOVIRGULA) {
+                     // ERRO , NAO FINALIZOU LISTA DE IDS
                   }
                }
-              
 
-            }
-            else{
-               //ERRO PQ NAO ACHOU ID DPS DE INT,BYTE,BOOLEAN OU STRING
+            } else {
+               // ERRO PQ NAO ACHOU ID DPS DE INT,BYTE,BOOLEAN OU STRING
             }
 
-         }else if(s.getToken() == tabela.FINAL){
+         } else if (simbolo.getToken() == tabela.FINAL) {
             // se for 'final' ao invez de int,byte,boolean ou string
 
-         
+         } else {
+            // ERRROOOOOU MIZERAVI
          }
-         else{
-            //ERRROOOOOU MIZERAVI
-         }   
 
-      }catch(Exception e){} // FIM TRY
+      } catch (Exception e) {
+      } // FIM TRY
 
-   }//FIM D   
+   }// FIM D
 
    // D' -> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV |
    // '['num']']}
@@ -190,18 +173,19 @@ class AnalisadorSintatico {
       boolean condGC = false;
       try {
          checkEOF();
-         if (s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL || s.getToken() == tabela.VIR) {
-            if (s.getToken() == tabela.ATT) {
+         if (simbolo.getToken() == tabela.ATT || simbolo.getToken() == tabela.ACOL
+               || simbolo.getToken() == tabela.VIR) {
+            if (simbolo.getToken() == tabela.ATT) {
                casaToken(tabela.ATT);
                temp = CONSTV();
                D1 = temp;
-               if (s.getToken() == tabela.VIR) {
-                  while (s.getToken() != tabela.PV) {
+               if (simbolo.getToken() == tabela.VIR) {
+                  while (simbolo.getToken() != tabela.PV) {
                      casaToken(tabela.VIR);
                      casaToken(tabela.ID);
                      simboloId = simboloParaAnalise;
-                     if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
-                        if (s.getToken() == tabela.ACOL) {
+                     if (simbolo.getToken() == tabela.ACOL || simbolo.getToken() == tabela.ATT) {
+                        if (simbolo.getToken() == tabela.ACOL) {
                            casaToken(tabela.ACOL);
                            casaToken(tabela.VALORCONST);
                            simboloEvet = simboloParaAnalise;
@@ -213,63 +197,63 @@ class AnalisadorSintatico {
                      }
                   }
                }
-               /*if(condGC == false){
-                  geracaoCodigo4(retornoD1, id);
-               }*/
-            } else if (s.getToken() == tabela.VIR) {
-               D1.setToken((byte)999); // pois assim numa concatenacao retorna algo <> de -1 
-               while (s.getToken() != tabela.PV) {
+               /*
+                * if(condGC == false){ geracaoCodigo4(retornoD1, id); }
+                */
+            } else if (simbolo.getToken() == tabela.VIR) {
+               D1.setToken((byte) 999); // pois assim numa concatenacao retorna algo <> de -1
+               while (simbolo.getToken() != tabela.PV) {
                   casaToken(tabela.VIR);
                   casaToken(tabela.ID);
                   simboloId = simboloParaAnalise;
-                  if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
-                     if (s.getToken() == tabela.ACOL) {
+                  if (simbolo.getToken() == tabela.ACOL || simbolo.getToken() == tabela.ATT) {
+                     if (simbolo.getToken() == tabela.ACOL) {
                         casaToken(tabela.ACOL);
                         casaToken(tabela.VALORCONST);
                         simboloEvet = simboloParaAnalise;
-                     
+
                         casaToken(tabela.FCOL);
-                        
+
                      } else {
                         casaToken(tabela.ATT);
                         temp = CONSTV();
-                        
+
                      }
                   }
-                 
+
                }
-            } else if (s.getToken() == tabela.ACOL) {
+            } else if (simbolo.getToken() == tabela.ACOL) {
                casaToken(tabela.ACOL);
                casaToken(tabela.VALORCONST);
                simboloEvet = simboloParaAnalise;
                D1 = simboloEvet;
-               
+
                casaToken(tabela.FCOL);
-              
-               if (s.getToken() == tabela.VIR) {
-                  while (s.getToken() != tabela.PV) {
+
+               if (simbolo.getToken() == tabela.VIR) {
+                  while (simbolo.getToken() != tabela.PV) {
                      casaToken(tabela.VIR);
                      casaToken(tabela.ID);
-                     
+
                      simboloId = simboloParaAnalise;
-                     
-                     if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
+
+                     if (simbolo.getToken() == tabela.ACOL || simbolo.getToken() == tabela.ATT) {
                         condGC = acaoSemantica9();
-                        if (s.getToken() == tabela.ACOL) {
+                        if (simbolo.getToken() == tabela.ACOL) {
                            casaToken(tabela.ACOL);
                            casaToken(tabela.VALORCONST);
                            simboloEvet = simboloParaAnalise;
-                           //simboloEvet = E();
-                          
+                           // simboloEvet = E();
+
                            casaToken(tabela.FCOL);
-                           
+
                         } else {
                            casaToken(tabela.ATT);
                            temp = CONSTV();
-                          
+
                         }
                      }
-                     
+
                   }
                }
             }
@@ -286,10 +270,11 @@ class AnalisadorSintatico {
       Simbolo constvSimbolo = new Simbolo();
       try {
          checkEOF();
-         if (s.getToken() == tabela.VALORCONST) {
+         if (simbolo.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
             constvSimbolo = simboloParaAnalise; // NOVA acaoSemantica44 e //acaoSemantica45 sera que da certo?
-            //constvSimbolo.setTipo(simboloParaAnalise.getTipo()); // acaoSemantica44 e //acaoSemantica45
+            // constvSimbolo.setTipo(simboloParaAnalise.getTipo()); // acaoSemantica44 e
+            // //acaoSemantica45
          } else {
             constvSimbolo = E(); // acaoSemantica43
          }
@@ -304,15 +289,15 @@ class AnalisadorSintatico {
    void CONSTV1() {
       try {
          checkEOF();
-         if (s.getToken() == tabela.VALORCONST) { // @TODO Como pegar o 0 ?
+         if (simbolo.getToken() == tabela.VALORCONST) { // @TODO Como pegar o 0 ?
             casaToken(tabela.VALORCONST); // HEXA
             // casaToken(tabela.X); // @TODO Como pegar o X ?
             // casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
             // casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
-         } else if (s.getToken() == tabela.CHAR) {
+         } else if (simbolo.getToken() == tabela.CHAR) {
             casaToken(tabela.CHAR);
-         } else if (s.getToken() == tabela.SUB || s.getToken() == tabela.VALORCONST) {
-            if (s.getToken() == tabela.SUB) {
+         } else if (simbolo.getToken() == tabela.SUB || simbolo.getToken() == tabela.VALORCONST) {
+            if (simbolo.getToken() == tabela.SUB) {
                casaToken(tabela.SUB);
             }
             casaToken(tabela.VALORCONST);
@@ -336,12 +321,12 @@ class AnalisadorSintatico {
       boolean condicao;
       try {
          checkEOF();
-         if (s.getToken() == tabela.ID) {
+         if (simbolo.getToken() == tabela.ID) {
             casaToken(tabela.ID);
-           
+
             A(simboloParaAnalise);
             casaToken(tabela.PV);
-         } else if (s.getToken() == tabela.FOR) {
+         } else if (simbolo.getToken() == tabela.FOR) {
             casaToken(tabela.FOR);
             casaToken(tabela.ID);
             simboloId = simboloParaAnalise;
@@ -349,21 +334,21 @@ class AnalisadorSintatico {
             simboloEfor = E();
             String rotInicio = rotuloPJ.novoRotulo(); // GeracaoCodigo28
             String rotFim = rotuloPJ.novoRotulo(); // GeracaoCodigo28
-            //geracaoMemoria.zerarTemp();
+            // geracaoMemoria.zerarTemp();
 
             // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             casaToken(tabela.TO);
             /*
-             * if(s.getToken() == tabela.ID) { casaToken(tabela.ID);
+             * if(simbolo.getToken() == tabela.ID) { casaToken(tabela.ID);
              * acaoSemantica3(simboloParaAnalise); simboloid2 = simboloParaAnalise;
              * acaoSemantica32(simboloEfor,simboloid2,simboloId); } else {
              */
             simboloE2for = E();
-            //geracaoMemoria.zerarTemp();
+            // geracaoMemoria.zerarTemp();
             // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
-           
+
             // }
-            if (s.getToken() == tabela.STEP) {
+            if (simbolo.getToken() == tabela.STEP) {
                casaToken(tabela.STEP);
                casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
                // acaoSemantica3(simboloParaAnalise);
@@ -372,81 +357,81 @@ class AnalisadorSintatico {
             }
             casaToken(tabela.DO);
             H(rotInicio, simboloId);
-            
-         } else if (s.getToken() == tabela.IF) {
+
+         } else if (simbolo.getToken() == tabela.IF) {
             casaToken(tabela.IF);
             simboloEif = E();
-            //geracaoMemoria.zerarTemp();
-           
+            // geracaoMemoria.zerarTemp();
+
             String rotuloFalse = rotuloPJ.novoRotulo();
             String rotuloFim = rotuloPJ.novoRotulo();
-           
+
             casaToken(tabela.THEN);
             J(rotuloFalse, rotuloFim);
-           
+
             // casaToken(tabela.PV);
-         } else if (s.getToken() == tabela.PV) {
+         } else if (simbolo.getToken() == tabela.PV) {
             casaToken(tabela.PV);
-         } else if (s.getToken() == tabela.READLN) {
+         } else if (simbolo.getToken() == tabela.READLN) {
             casaToken(tabela.READLN);
             casaToken(tabela.APAR);
             casaToken(tabela.ID);
             simboloId = simboloParaAnalise;
             condicao = acaoSemantica9();
-            if (s.getToken() == tabela.ACOL) {
+            if (simbolo.getToken() == tabela.ACOL) {
                casaToken(tabela.ACOL);
-             
+
                simboloEvet = E();
-              
+
                // acaoSemantica41(simboloId,simboloEvet); nao eh mais necessaria
                casaToken(tabela.FCOL);
             }
-            
+
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
-         } else if (s.getToken() == tabela.WRITELN) {
+         } else if (simbolo.getToken() == tabela.WRITELN) {
             int tempString = geracaoMemoria.novoTemp();
             casaToken(tabela.WRITELN);
             casaToken(tabela.APAR);
             simboloEwr = E();
-           
-            //geracaoCodigo22();
-            while (s.getToken() == tabela.VIR) {
+
+            // geracaoCodigo22();
+            while (simbolo.getToken() == tabela.VIR) {
                tempString = geracaoMemoria.novoTemp();
                casaToken(tabela.VIR);
                simboloEwr = E();
-               
+
             }
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
-            
-            //geracaoMemoria.zerarTemp();
-         } else if (s.getToken() == tabela.WRITE) {
+
+            // geracaoMemoria.zerarTemp();
+         } else if (simbolo.getToken() == tabela.WRITE) {
             int tempString = geracaoMemoria.novoTemp();
             casaToken(tabela.WRITE);
             casaToken(tabela.APAR);
             simboloEwr = E();
-            
-            //geracaoCodigo22();
-            while (s.getToken() == tabela.VIR) {
+
+            // geracaoCodigo22();
+            while (simbolo.getToken() == tabela.VIR) {
                tempString = geracaoMemoria.novoTemp();
                casaToken(tabela.VIR);
                simboloEwr = E();
-             
-               //geracaoCodigo22();
+
+               // geracaoCodigo22();
             }
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
-            //geracaoMemoria.zerarTemp();
+            // geracaoMemoria.zerarTemp();
          } else {
             tokenInesperado();
          }
-      
+
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-      //geracaoMemoria.zerarTemp();
+      // geracaoMemoria.zerarTemp();
    }
 
    // A -> = E | '['E']' = E
@@ -454,28 +439,28 @@ class AnalisadorSintatico {
       Simbolo simboloA = new Simbolo();
       Simbolo simboloA1 = new Simbolo();
       Simbolo simboloA2 = new Simbolo();
-   
+
       try {
          checkEOF();
-      
-         if (s.getToken() == tabela.ATT) {
+
+         if (simbolo.getToken() == tabela.ATT) {
             casaToken(tabela.ATT);
             acaoSemantica5(id);
             simboloA = E(); // acaoSemantica49
-            //geracaoMemoria.zerarTemp();
-           
+            // geracaoMemoria.zerarTemp();
+
          } else {
-            
+
             casaToken(tabela.ACOL);
             simboloA1 = E();
-            //geracaoMemoria.zerarTemp();
-           
+            // geracaoMemoria.zerarTemp();
+
             casaToken(tabela.FCOL);
-            
+
             casaToken(tabela.ATT);
             simboloA2 = E(); // acaoSemantica49
-            //geracaoMemoria.zerarTemp();
-            
+            // geracaoMemoria.zerarTemp();
+
          }
       } catch (Exception e) {
          checkEOF();
@@ -487,17 +472,17 @@ class AnalisadorSintatico {
    void H(String rotInicio, Simbolo contador) {
       try {
          checkEOF();
-      
-         if (s.getToken() == tabela.ACHAVE) {
+
+         if (simbolo.getToken() == tabela.ACHAVE) {
             casaToken(tabela.ACHAVE);
             while (ehComando()) {
                C();
             }
-           
+
             casaToken(tabela.FCHAVE);
          } else {
             C();
-           
+
          }
       } catch (Exception e) {
          checkEOF();
@@ -505,23 +490,23 @@ class AnalisadorSintatico {
       }
    }
 
-   // J -> C [else ('{' {C} '}' || C)] | '{' {C} '}' [else ('{' {C} '}' || C)]
-   void J(String rotuloFalse, String rotuloFim) {
+   // C1 -> (begin {C} endif | C) [else (begin {C} endelse | C)]
+   void C1() {
       try {
          checkEOF();
-      
-         if (s.getToken() == tabela.ACHAVE) {
+
+         if (simbolo.getToken() == tabela.ACHAVE) {
             casaToken(tabela.ACHAVE);
             do {
                C();
-            
+
             } while (ehComando());
-           
+
             casaToken(tabela.FCHAVE);
-            if (s != null && s.getToken() == tabela.ELSE) { // caso o opcional seja no EOF
+            if (simbolo != null && simbolo.getToken() == tabela.ELSE) { // caso o opcional seja no EOF
                casaToken(tabela.ELSE);
-              
-               if (s.getToken() == tabela.ACHAVE) {
+
+               if (simbolo.getToken() == tabela.ACHAVE) {
                   casaToken(tabela.ACHAVE);
                   do {
                      C();
@@ -533,11 +518,11 @@ class AnalisadorSintatico {
             }
          } else {
             C();
-           
-            if (s != null && s.getToken() == tabela.ELSE) {
+
+            if (simbolo != null && simbolo.getToken() == tabela.ELSE) {
                casaToken(tabela.ELSE);
-              
-               if (s.getToken() == tabela.ACHAVE) {
+
+               if (simbolo.getToken() == tabela.ACHAVE) {
                   casaToken(tabela.ACHAVE);
                   C();
                   casaToken(tabela.FCHAVE);
@@ -556,222 +541,150 @@ class AnalisadorSintatico {
    Simbolo E() {
       Simbolo simboloE = new Simbolo();
       Simbolo simboloE2 = new Simbolo();
-      Simbolo simboloCloneE = new Simbolo();
-      Simbolo simboloCloneE2 = new Simbolo();
-      boolean condicao;
-      int operacao = 0; /* 1 > / 2 < / 3 >=  / 4 <= / 5 <> / 6 = */
       try {
          checkEOF();
-      
-         simboloE = E1(); // acaoSemantica7
-         procExpend = procExpsend; // geracaoCodigo17
-         simboloCloneE = new Simbolo(simboloE.getToken(), simboloE.getLexema(), simboloE.getEndereco(),
-               simboloE.getTipo(), simboloE.getClasse(), simboloE.getTamanho());
-         if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
-               || s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT) {
-           
-            /* 1 > / 2 < / 3 >=  / 4 <= / 5 <> / 6 = */
-            if (s.getToken() == tabela.MAIOR) {
+         simboloE = E1();
+         while (simbolo.getToken() == tabela.MAIOR || simbolo.getToken() == tabela.MENOR
+               || simbolo.getToken() == tabela.MAIORIG || simbolo.getToken() == tabela.MENORIG
+               || simbolo.getToken() == tabela.DIFF || simbolo.getToken() == tabela.ATT
+               || simbolo.getToken() == tabela.COMPARA) {
+
+            if (simbolo.getToken() == tabela.MAIOR) {
                casaToken(tabela.MAIOR);
-               
-               operacao = 1;
-            } else if (s.getToken() == tabela.MENOR) {
+            } else if (simbolo.getToken() == tabela.MENOR) {
                casaToken(tabela.MENOR);
-               
-               operacao = 2;
-            } else if (s.getToken() == tabela.MAIORIG) {
+            } else if (simbolo.getToken() == tabela.MAIORIG) {
                casaToken(tabela.MAIORIG);
-             
-               operacao = 3;
-            } else if (s.getToken() == tabela.MENORIG) {
+            } else if (simbolo.getToken() == tabela.MENORIG) {
                casaToken(tabela.MENORIG);
-            
-               operacao = 4;
-            } else if (s.getToken() == tabela.DIFF) {
+            } else if (simbolo.getToken() == tabela.DIFF) {
                casaToken(tabela.DIFF);
-               
-               operacao = 5;
-            } else if (s.getToken() == tabela.ATT) {
+            } else if (simbolo.getToken() == tabela.ATT) {
                casaToken(tabela.ATT);
-              
-               operacao = 6;
+            } else {
+               casaToken(tabela.COMPARA);
             }
-         
+
             simboloE2 = E1();
-            simboloCloneE2 = new Simbolo(simboloE2.getToken(), simboloE2.getLexema(), simboloE2.getEndereco(),
-                  simboloE2.getTipo(), simboloE2.getClasse(), simboloE2.getTamanho());
-         
-            simboloCloneE.setTipo("tipo_logico"); // acaoSemantica47
-            return simboloCloneE;
          }
-      
+
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-   
+
       return simboloE;
    }
 
-   // E' -> [+ | -] E'' {('+' | '-' | or ) E''}
+   // E' -> [+ | -] E'' {('+' | '-' | '||' ) E''}
    Simbolo E1() {
       Simbolo simboloE1 = new Simbolo();
       Simbolo simboloE1_2 = new Simbolo();
       Simbolo simboloCloneE1 = new Simbolo();
       Simbolo simboloCloneE1_2 = new Simbolo();
       boolean condicao;
-      int operacao = 0; /* 1 para add , 2 para sub , 3 para or, 0 default */
       try {
          checkEOF();
-        
-         if (s.getToken() == tabela.ADD) {
-            casaToken(tabela.ADD);
-            
-         } else if (s.getToken() == tabela.SUB) {
+
+         if (simbolo.getToken() == tabela.SOMA) {
+            casaToken(tabela.SOMA);
+
+         } else if (simbolo.getToken() == tabela.SUB) {
             casaToken(tabela.SUB);
-           
+
          }
-         simboloE1 = E2(); // acaoSemantica14
-         
-         
-         procExpsend = procTend;
-         simboloCloneE1 = new Simbolo(simboloE1.getToken(), simboloE1.getLexema(), simboloE1.getEndereco(),
-               simboloE1.getTipo(), simboloE1.getClasse(), simboloE1.getTamanho());
-        
-         while (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR
-               || s.getToken() == tabela.MUL) {
-            // if (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken()
-            // == tabela.OR) {
-            if (s.getToken() == tabela.ADD) {
-               casaToken(tabela.ADD);
-               operacao = acaoSemantica15(simboloE1);
-            } else if (s.getToken() == tabela.SUB) {
+         simboloE1 = E2();
+
+         while (simbolo.getToken() == tabela.SOMA || simbolo.getToken() == tabela.SUB
+               || simbolo.getToken() == tabela.OR) { // POSSIVEL ERRO IANN
+
+            if (simbolo.getToken() == tabela.SOMA) {
+               casaToken(tabela.SOMA);
+            } else if (simbolo.getToken() == tabela.SUB) {
                casaToken(tabela.SUB);
-               operacao = acaoSemantica16(simboloE1);
             } else {
                casaToken(tabela.OR);
-               operacao = acaoSemantica17(simboloE1);
             }
-            int Tend = procTend;
             simboloE1_2 = E2();
-            simboloCloneE1_2 = new Simbolo(simboloE1_2.getToken(), simboloE1_2.getLexema(), simboloE1_2.getEndereco(),
-                  simboloE1_2.getTipo(), simboloE1_2.getClasse(), simboloE1_2.getTamanho());
-         
+
          }
-      
+
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-   
+
       return simboloE1;
-   
+
    }
 
-   // E'' -> F {('*' | '/' | '%' | and) F}
+   // E'' -> F {('*' | '/' | '&&') F}
    Simbolo E2() {
       Simbolo simboloE2 = new Simbolo();
       Simbolo simboloE2_1 = new Simbolo();
-      Simbolo simboloCloneE2 = new Simbolo();
-      Simbolo simboloCloneE2_1 = new Simbolo();
-      int operador = 0;
-      
+
       try {
          checkEOF();
-      
-         simboloE2 = F(); // acaoSemantica20
-         simboloCloneE2 = new Simbolo(simboloE2.getToken(), simboloE2.getLexema(), simboloE2.getEndereco(),
-               simboloE2.getTipo(), simboloE2.getClasse(), simboloE2.getTamanho());
-         procTend = procFend; // geracaoCodigo14
-         while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD
-               || s.getToken() == tabela.AND) {
-            // if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken()
-            // == tabela.MOD || s.getToken() == tabela.AND) {
-            if (s.getToken() == tabela.MUL) {
-               casaToken(tabela.MUL);
-               
-            } else if (s.getToken() == tabela.DIV) {
+
+         simboloE2 = F();
+         while (simbolo.getToken() == tabela.MULT || simbolo.getToken() == tabela.DIV
+               || simbolo.getToken() == tabela.AND) {
+            if (simbolo.getToken() == tabela.MULT) {
+               casaToken(tabela.MULT);
+
+            } else if (simbolo.getToken() == tabela.DIV) {
                casaToken(tabela.DIV);
-             
-            } else if (s.getToken() == tabela.MOD) {
-               casaToken(tabela.MOD);
-              
+
             } else {
                casaToken(tabela.AND);
-             
+
             }
             simboloE2_1 = F();
-            simboloCloneE2_1 = new Simbolo(simboloE2_1.getToken(), simboloE2_1.getLexema(), simboloE2_1.getEndereco(),
-                  simboloE2_1.getTipo(), simboloE2_1.getClasse(), simboloE2_1.getTamanho());
-           
          }
-      
+
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-   
+
       return simboloE2;
-   
+
    }
 
-   // F -> '(' E ')' | not F | id ['[' E ']']| num
+   // F -> '(' E ')' | ! F | id | num
    Simbolo F() {
       Simbolo simboloF = new Simbolo(); // simbolo que vai ser retornado
-      Simbolo simboloCloneF = new Simbolo();
       Simbolo simboloF1 = new Simbolo();
-      Simbolo simboloE = new Simbolo();
       try {
-      
+
          checkEOF();
-      
-         if (s.getToken() == tabela.APAR) {
-            casaToken(tabela.APAR);
-            simboloF = E(); // acaoSemantica27
-            procFend = simboloF.getEndereco();
-            casaToken(tabela.FPAR);
-         } else if (s.getToken() == tabela.NOT) {
-            casaToken(tabela.NOT);
-            int Fend = procFend;
+
+         if (simbolo.getToken() == tabela.APAR) {
+            casaToken(tabela.ABREP);
+            simboloF = E();
+            casaToken(tabela.FECHAP);
+         } else if (simbolo.getToken() == tabela.NEG) {
+            casaToken(tabela.NEG);
             simboloF1 = F();
-          
+
             return simboloF1;
-         } else if (s.getToken() == tabela.VALORCONST) {
-            casaToken(tabela.VALORCONST);
-            // \/ acaoSemantica29
-            simboloF = new Simbolo(simboloParaAnalise.getToken(), simboloParaAnalise.getLexema(),
+         } else if (simbolo.getToken() == tabela.CONSTANTE) {
+            casaToken(tabela.CONSTANTE);
+            simboloF = new Simbolo(simboloParaAnalise.getToken(), simboloParaAnalise.getLexema(), // duvida iann
                   simboloParaAnalise.getEndereco(), simboloParaAnalise.getTipo(), "classe_variavel", 0);
-                 
-            
-            
+
          } else {
             casaToken(tabela.ID);
-            
-            // acaoSemantica30 
             simboloF = lexico.simbolos.buscaSimbolo(simboloParaAnalise.getLexema());
-            procFend = simboloF.getEndereco(); // geracaoCodigo9
-            if (s.getToken() == tabela.ACOL) {
-               casaToken(tabela.ACOL);
-              
-               // casaToken(tabela.VALORCONST); @TODO VITAO
-               simboloE = E();
-               
-               simboloCloneF = new Simbolo(simboloF.getToken(), simboloF.getLexema(), simboloF.getEndereco(),
-                     simboloF.getTipo(), simboloF.getClasse(), simboloF.getTamanho());
-               
-               casaToken(tabela.FCOL);
-               
-               return simboloCloneF;
-            }
          }
-      
+
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-   
+
       return simboloF;
-   
+
    }
 
    void checkEOF() {
@@ -782,19 +695,19 @@ class AnalisadorSintatico {
    }
 
    void tokenInesperado() {
-      System.err.println((lexico.linha + 1) + ":Token nao esperado: " + s.getLexema());
+      System.err.println((lexico.linha + 1) + ":Token nao esperado: " + simbolo.getLexema());
       System.exit(0);
    }
 
    boolean ehDeclaracao() {
-      return (s != null && (s.getToken() == tabela.VAR || s.getToken() == tabela.CONST || s.getToken() == tabela.INTEGER
-            || s.getToken() == tabela.CHAR));
+      return (simbolo != null && (simbolo.getToken() == tabela.VAR || simbolo.getToken() == tabela.CONST
+            || simbolo.getToken() == tabela.INTEGER || simbolo.getToken() == tabela.CHAR));
    }
 
    boolean ehComando() {
-      return (s != null && (s.getToken() == tabela.ID || s.getToken() == tabela.FOR || s.getToken() == tabela.IF
-            || s.getToken() == tabela.PV || s.getToken() == tabela.READLN || s.getToken() == tabela.WRITELN
-            || s.getToken() == tabela.WRITE));
+      return (simbolo != null && (simbolo.getToken() == tabela.ID || simbolo.getToken() == tabela.FOR
+            || simbolo.getToken() == tabela.IF || simbolo.getToken() == tabela.PV || simbolo.getToken() == tabela.READLN
+            || simbolo.getToken() == tabela.WRITELN || simbolo.getToken() == tabela.WRITE));
    }
 
 }
