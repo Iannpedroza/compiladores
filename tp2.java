@@ -111,62 +111,121 @@ class AnalisadorSintatico {
       boolean condGC;
       try {
          checkEOF();
-         if (s.getToken() == tabela.VAR) {
-            casaToken(tabela.VAR);
-            while(s.getToken() == tabela.INTEGER ||s.getToken() == tabela.CHAR){
-               if (s.getToken() == tabela.INTEGER) {
-                  casaToken(tabela.INTEGER);
-                  
-               
-               } else {
-                  casaToken(tabela.CHAR);
-                  
-               }
-               casaToken(tabela.ID);
-               Simbolo id = simboloParaAnalise;
-               Simbolo retornoD1 = D1(simboloParaAnalise);
-               casaToken(tabela.PV);
-               if(retornoD1.getToken() == -1){
-                  condGC=true;
-               } else {
-                  condGC=false;
-               }
+         if (s.getToken() == tabela.INT || s.getToken() == tabela.BYTE || s.getToken() == tabela.BOOLEAN || s.getToken() == tabela.STRING) {
             
-             
+            if(s.getToken() == tabela.INT){
+               casaToken(tabela.INT); 
             }
-         } else if (s.getToken() == tabela.CONST) { //CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
-            casaToken(tabela.CONST);
-            casaToken(tabela.ID);
-            simboloId = simboloParaAnalise;
-            if (s.getToken() == tabela.ATT) {
-               if (s.getToken() == tabela.ATT) {
+            if(s.getToken() == tabela.BYTE){
+               casaToken(tabela.BYTE);
+            }
+            if(s.getToken() == tabela.BOOLEAN){
+               casaToken(tabela.BOOLEAN);
+            }
+            if(s.getToken() == tabela.STRING){
+               casaToken(tabela.STRING);
+            }
+            
+
+            if(s.getToken() == tabela.ID ){
+               casaToken(tabela.ID);
+               if(s.getToken() == tabela.PONTOVIRGULA ){
+                  casaToken(tabela.PONTOVIRGULA);
+                  //JOAO FAZER OQUE? ACABOU? ACHOU O PONTO E VIRGULA
+               } 
+               else if(s.getToken() == tabela.ATT ){
                   casaToken(tabela.ATT);
-                  simboloConst = CONSTV();
-                  c = lexico.simbolos.buscaSimbolo(simboloId.getLexema());
-                  c.setTipo(simboloConst.getTipo());// acaoSemantica53
-                  
+                  if(s.getToken() == tabela.CONSTANTE){
+                     CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO
+                     if(s.getToken() == tabela.VIRGULA){
+                        while(s.getToken() == tabela.VIRGULA){
+                           casaToken(tabela.VIRGULA);
+                           if(s.getToken() == tabela.ID ){
+                              casaToken(tabela.ID);
+                              if(s.getToken() == tabela.ATT){
+                                 casaToken(tabela.ATT);
+                                 if(s.getToken() == tabela.CONSTANTE){
+                                  CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO    
+                                 }
+                                 else{
+                                 //ERRO NAO ACHOU CONSTANTE DEPOIS DE ATRIBUIÇÃO
+                                 }
+                              }
+                           }
+                           else{
+                              //ERRO NAO ACHOU ID DEPOIS DA VIRGULA
+                           }
+                           else if(s.getToken() == tabela.PONTOVIRGULA){
+                              casaToken(tabela.PONTOVIRGULA);
+                           }
+                           else if(s.getToken() == tabela.ATT){
+                              casaToken(tabela.ATT);
+                              if(s.getToken() == tabela.CONSTANTE){
+                                 CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO    
+                              }
+                              else{
+                                 //ERRO NAO ACHOU CONSTANTE DEPOIS DE ATRIBUIÇÃO
+                              }
+                           }
+                           else{
+                              //ERROOO UMA VEZ QUE NA LISTA DE IDS CHEGOU ALGO QUE NÃO É ID DEPOIS DA VIRGULA
+                           }                  
+                        }
+                     }
+                     else if(s.getToken() == tabela.PONTOVIRGULA){
+                        casaToken(tabela.PONTOVIRGULA);
+                        //ACABA AQUI POIS DEPOIS DE ATRIBUIR HOUVE PONTO E VIRGULA
+                     }
+                  }
+                  else{
+                     //ERRO NAO ACHOU CONSTANTE DEPOIS DE ATRIBUIÇÃO
+                  }
+   
                }
-            } else {
-               casaToken(tabela.ACOL);
-               casaToken(tabela.VALORCONST); //@TODO NUM
-               simboloEconst = simboloParaAnalise;
-               casaToken(tabela.FCOL);
-               casaToken(tabela.ATT);
-               // casaToken(tabela.ASPAS);
-               casaToken(tabela.VALORCONST); // @TODO STRING
-               simboloString = simboloParaAnalise;
-               // casaToken(tabela.ASPAS);
-             
+
+               else if(s.getToken() == tabela.VIRGULA){
+                  while(s.getToken() == tabela.VIRGULA){
+                     casaToken(tabela.VIRGULA);
+                     if(s.getToken() == tabela.ID ){
+                        casaToken(tabela.ID);
+                     }
+                     else if(s.getToken() == tabela.PONTOVIRGULA){
+                        casaToken(tabela.PONTOVIRGULA);
+                     }
+                     else if(s.getToken() == tabela.ATT){
+                        casaToken(tabela.ATT);
+                        if(s.getToken() == tabela.CONSTANTE){
+                           CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO    
+                        }
+                        else{
+                           //ERRO NAO ACHOU CONSTANTE DEPOIS DE ATRIBUIÇÃO
+                        }
+                     }
+                     else{
+                        //ERROOO UMA VEZ QUE NA LISTA DE IDS CHEGOU ALGO QUE NÃO É ID DEPOIS DA VIRGULA
+                     }                  
+                  }
+                  
+               }   
+              
+
             }
-            casaToken(tabela.PV);
-         }else {
-            tokenInesperado();
+            else{
+               //ERRO PQ NAO ACHOU ID DPS DE INT,BYTE,BOOLEAN OU STRING
+            }
+
+         }else if(s.getToken() == tabela.FINAL){
+            // se for 'final' ao invez de int,byte,boolean ou string
+
+         
          }
-      } catch (Exception e) {
-         checkEOF();
-         System.err.println(e.toString());
-      }
-   }
+         else{
+            //ERRROOOOOU MIZERAVI
+         }   
+
+      }catch(Exception e){} // FIM TRY
+
+   }//FIM D   
 
    // D' -> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV |
    // '['num']']}
