@@ -69,15 +69,15 @@ class AnalisadorSintatico {
    void S() {
       try {
          if (simbolo != null) {
-            do {
+            while (ehDeclaracao()) {
                checkEOF();
                D();
-            } while (ehDeclaracao());
+            }
 
-            do {
+            while() {
                checkEOF();
                C();
-            } while (ehComando());
+            } 
 
          }
       } catch (Exception e) {
@@ -296,8 +296,8 @@ class AnalisadorSintatico {
       }
    }
 
-   // C -> id C' ';'| FOR id = E to E [step num] do C'' | if E then C''' | ';' |
-   // readln'('id')'';' | write'('E{,E}')'';' | writeln'('E{,E}')'';'
+   // C -> (id <- E)';' | while '(' E ')'  (C) | while '(' E ')' begin {C} endwhile | if '(' E ')' (C |C')  | ';' | readln '('id')'  ';'
+   // | write '(' E {, E}')' ';'| writeln '(' E {, E} ')' ';'
    void C() {
       Simbolo simboloEfor = new Simbolo();
       Simbolo simboloE2for = new Simbolo();
@@ -311,106 +311,64 @@ class AnalisadorSintatico {
          checkEOF();
          if (simbolo.getToken() == tabela.ID) {
             casaToken(tabela.ID);
-
-            A(simboloParaAnalise);
-            casaToken(tabela.PV);
-         } else if (simbolo.getToken() == tabela.FOR) {
-            casaToken(tabela.FOR);
-            casaToken(tabela.ID);
-            simboloId = simboloParaAnalise;
             casaToken(tabela.ATT);
-            simboloEfor = E();
-            String rotInicio = rotuloPJ.novoRotulo(); // GeracaoCodigo28
-            String rotFim = rotuloPJ.novoRotulo(); // GeracaoCodigo28
-            // geracaoMemoria.zerarTemp();
+            E();
+            casaToken(tabela.PONTOVIRGULA);
+         } else if (simbolo.getToken() == tabela.WHILE) {
+            casaToken(tabela.WHILE);
+            casaToken(tabela.ABREP);
+            E();
+            casaToken(tabela.FECHAP);
+            if (simbolo.getToken() == tabela.BEGIN){
+               casaToken(tabela.BEGIN);
+               while (ehComando(){
+                  C();
+               }
 
-            // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
-            casaToken(tabela.TO);
-            /*
-             * if(simbolo.getToken() == tabela.ID) { casaToken(tabela.ID);
-             * acaoSemantica3(simboloParaAnalise); simboloid2 = simboloParaAnalise;
-             * acaoSemantica32(simboloEfor,simboloid2,simboloId); } else {
-             */
-            simboloE2for = E();
-            // geracaoMemoria.zerarTemp();
-            // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
-
-            // }
-            if (simbolo.getToken() == tabela.STEP) {
-               casaToken(tabela.STEP);
-               casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
-               // acaoSemantica3(simboloParaAnalise);
-               // acaoSemantica36(simboloParaAnalise);
-               // acaoSemantica34(); // n�o implementada a 34
+               casaToken(tabela.ENDWHILE);
+            } else {
+               C();
             }
-            casaToken(tabela.DO);
-            H(rotInicio, simboloId);
 
          } else if (simbolo.getToken() == tabela.IF) {
+
+            // REFAZER DEPOIS IANN
             casaToken(tabela.IF);
-            simboloEif = E();
-            // geracaoMemoria.zerarTemp();
+            casaToken(tabela.ABREP);
+            E();
+            casaToken(tabela.FECHAP);
 
-            String rotuloFalse = rotuloPJ.novoRotulo();
-            String rotuloFim = rotuloPJ.novoRotulo();
+            if (ehComando()) {
 
-            casaToken(tabela.THEN);
-            J(rotuloFalse, rotuloFim);
+            } else{
+
+            }
 
             // casaToken(tabela.PV);
-         } else if (simbolo.getToken() == tabela.PV) {
-            casaToken(tabela.PV);
+         } else if (simbolo.getToken() == tabela.PONTOVIRGULA) {
+            casaToken(tabela.PONTOVIRGULA);
          } else if (simbolo.getToken() == tabela.READLN) {
             casaToken(tabela.READLN);
-            casaToken(tabela.APAR);
+            casaToken(tabela.ABREP);
             casaToken(tabela.ID);
-            simboloId = simboloParaAnalise;
-            condicao = acaoSemantica9();
-            if (simbolo.getToken() == tabela.ACOL) {
-               casaToken(tabela.ACOL);
+            casaToken(tabela.FECHAP);
+            casaToken(tabela.PONTOVIRGULA);
+         } else if (simbolo.getToken() == tabela.WRITE || simbolo.getToken() == tabela.WRITELN) {
 
-               simboloEvet = E();
-
-               // acaoSemantica41(simboloId,simboloEvet); nao eh mais necessaria
-               casaToken(tabela.FCOL);
+            if (simbolo.getToken() == tabela.WRITE) {
+               casaToken(tabela.WRITE);
+            } else {
+               casaToken(tabela.WRITELN);
             }
-
-            casaToken(tabela.FPAR);
-            casaToken(tabela.PV);
-         } else if (simbolo.getToken() == tabela.WRITELN) {
-            int tempString = geracaoMemoria.novoTemp();
-            casaToken(tabela.WRITELN);
-            casaToken(tabela.APAR);
-            simboloEwr = E();
-
-            // geracaoCodigo22();
-            while (simbolo.getToken() == tabela.VIR) {
-               tempString = geracaoMemoria.novoTemp();
-               casaToken(tabela.VIR);
-               simboloEwr = E();
-
+            casaToken(tabela.ABREP);
+            E();
+            while (simbolo.getToken() == tabela.VIRGULA) {
+               casaToken(tabela.VIRGULA);
+               E();
             }
-            casaToken(tabela.FPAR);
-            casaToken(tabela.PV);
+            casaToken(tabela.FECHAP);
+            casaToken(tabela.PONTOVIRGULA);
 
-            // geracaoMemoria.zerarTemp();
-         } else if (simbolo.getToken() == tabela.WRITE) {
-            int tempString = geracaoMemoria.novoTemp();
-            casaToken(tabela.WRITE);
-            casaToken(tabela.APAR);
-            simboloEwr = E();
-
-            // geracaoCodigo22();
-            while (simbolo.getToken() == tabela.VIR) {
-               tempString = geracaoMemoria.novoTemp();
-               casaToken(tabela.VIR);
-               simboloEwr = E();
-
-               // geracaoCodigo22();
-            }
-            casaToken(tabela.FPAR);
-            casaToken(tabela.PV);
-            // geracaoMemoria.zerarTemp();
          } else {
             tokenInesperado();
          }
@@ -419,7 +377,6 @@ class AnalisadorSintatico {
          checkEOF();
          System.err.println(e.toString());
       }
-      // geracaoMemoria.zerarTemp();
    }
 
    // C1 -> (begin {C} endif | C) [else (begin {C} endelse | C)]
