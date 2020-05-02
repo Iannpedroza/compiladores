@@ -1,12 +1,10 @@
-import java.util.Arrays;
-import java.util.List;
 import java.io.*;
 import java.util.Scanner;
 import java.util.HashMap;
 
 public class tp2 {
    public static void main(String[] args) throws Exception {
-      // Criação dos objetos Tabela de Simbolos, simbolo e analisador lexico
+      // Criação do analisador sintatico
       AnalisadorSintatico sintatico = new AnalisadorSintatico();
       sintatico.S();
 
@@ -20,6 +18,7 @@ class AnalisadorSintatico {
    Simbolo simbolo, simboloParaAnalise;
    public static Scanner s;
 
+   //Construtor do analisador sintatico, responsável por construir os objetos da tabela de simbolos e do analisador lexico e do simbolo
    AnalisadorSintatico() {
       try {
          s = new Scanner(System.in);
@@ -29,12 +28,11 @@ class AnalisadorSintatico {
          lexico = new AnalisadorLexico(tabela);
 
          simbolo = lexico.analisaLex(s);
-         if (simbolo == null) { // comentario
+         if (simbolo == null) { 
             simbolo = lexico.analisaLex(s);
          }
       } catch (Exception e) {
-         checkEOF();
-         System.out.print(e.getMessage());
+         verificaEOF();
       }
    }
 
@@ -46,18 +44,17 @@ class AnalisadorSintatico {
                simbolo = lexico.analisaLex(s);
             } else {
                if (lexico.ehEOF) {
-                  System.err.println((lexico.linha + 1) + ":Fim de Arquivo nao esperado.");
+                  System.out.println((lexico.linha + 1) + ":Fim de Arquivo nao esperado.");
                   System.exit(0);
                } else {
                   tokenInesperado();
                }
             }
          } else {
-            checkEOF();
+            verificaEOF();
          }
       } catch (Exception e) {
-         checkEOF();
-         System.err.println("casaT" + e.toString());
+         verificaEOF();
       }
    }
 
@@ -69,14 +66,14 @@ class AnalisadorSintatico {
             if (ehDeclaracao()) {
                erro = false;
                while (ehDeclaracao()) {
-                  checkEOF();
+                  verificaEOF();
                   D();
                }
             }
             if (ehComando()){
                erro = false;
                while (ehComando()) {
-                  checkEOF();
+                  verificaEOF();
                   C();
                }
             } 
@@ -86,7 +83,7 @@ class AnalisadorSintatico {
             }
          }
       } catch (Exception e) {
-         checkEOF();
+         verificaEOF();
          System.err.println(e.toString());
       }
    }
@@ -95,7 +92,7 @@ class AnalisadorSintatico {
    // final id (<- CONST) ';'
    void D() {
       try {
-         checkEOF();
+         verificaEOF();
          if (simbolo.getToken() == tabela.INT || simbolo.getToken() == tabela.BYTE
                || simbolo.getToken() == tabela.BOOLEAN || simbolo.getToken() == tabela.STRING) {
 
@@ -181,7 +178,7 @@ class AnalisadorSintatico {
    // | write '(' E {, E}')' ';'| writeln '(' E {, E} ')' ';'
    void C() {
       try {
-         checkEOF();
+         verificaEOF();
          if (simbolo.getToken() == tabela.ID) {
             casaToken(tabela.ID);
             casaToken(tabela.ATT);
@@ -261,7 +258,7 @@ class AnalisadorSintatico {
          }
 
       } catch (Exception e) {
-         checkEOF();
+         verificaEOF();
          System.err.println(e.toString());
       }
    }
@@ -269,7 +266,7 @@ class AnalisadorSintatico {
    // C' => (begin {C} endif) [else (begin {C} endelse | C)]
    void C1() {
       try {
-         checkEOF();
+         verificaEOF();
          casaToken(tabela.BEGIN);
          while (ehComando()) {
             C();
@@ -289,7 +286,7 @@ class AnalisadorSintatico {
          }
 
       } catch (Exception e) {
-         checkEOF();
+         verificaEOF();
          System.err.println(e.toString());
       }
    }
@@ -297,7 +294,7 @@ class AnalisadorSintatico {
    // E -> E' {('<' | '>' | '<=' | '>=' | '<>' | '=') E'}
    void E() {
       try {
-         checkEOF();
+         verificaEOF();
          E1();
          while (simbolo.getToken() == tabela.MAIOR || simbolo.getToken() == tabela.MENOR
                || simbolo.getToken() == tabela.MAIORIG || simbolo.getToken() == tabela.MENORIG
@@ -324,7 +321,7 @@ class AnalisadorSintatico {
          }
 
       } catch (Exception e) {
-         checkEOF();
+         verificaEOF();
          System.err.println(e.toString());
       }
 
@@ -333,7 +330,7 @@ class AnalisadorSintatico {
    // E' -> [+ | -] E'' {('+' | '-' | '||' ) E''}
    void E1() {
       try {
-         checkEOF();
+         verificaEOF();
 
          if (simbolo.getToken() == tabela.SOMA) {
             casaToken(tabela.SOMA);
@@ -359,7 +356,7 @@ class AnalisadorSintatico {
          }
 
       } catch (Exception e) {
-         checkEOF();
+         verificaEOF();
          System.err.println(e.toString());
       }
 
@@ -369,7 +366,7 @@ class AnalisadorSintatico {
    void E2() {
 
       try {
-         checkEOF();
+         verificaEOF();
 
          F();
          while (simbolo.getToken() == tabela.MULT || simbolo.getToken() == tabela.DIV
@@ -388,7 +385,7 @@ class AnalisadorSintatico {
          }
 
       } catch (Exception e) {
-         checkEOF();
+         verificaEOF();
          System.err.println(e.toString());
       }
 
@@ -398,7 +395,7 @@ class AnalisadorSintatico {
    void F() {
       try {
 
-         checkEOF();
+         verificaEOF();
 
          if (simbolo.getToken() == tabela.ABREP) {
             casaToken(tabela.ABREP);
@@ -419,12 +416,12 @@ class AnalisadorSintatico {
          }
       //*//
       } catch (Exception e) {
-         checkEOF();
+         verificaEOF();
          System.err.println(e.toString());
       }
    }
 
-   void checkEOF() {
+   void verificaEOF() {
       if (lexico.ehEOF) {
          System.err.println((lexico.linha + 1) + ":Fim de arquivo nao esperado.");
          System.exit(0);
@@ -722,24 +719,16 @@ class AnalisadorLexico {
 
             if (lexema.charAt(0) == '0') {
                if (lexema.length() == 1) {
-                  simb = tabela.insereConstante(lexema);
+                  simb = tabela.insereConstante(lexema, "NUMERICA");
                } else {
                   // Constante hexadecimal
-                  if (lexema.length() > 2 && lexema.charAt(1) == 'x') {
+                  if (lexema.length() == 4 && lexema.charAt(1) == 'x') {
                      // Constantes hexa sao do tipo 0xFF -> 4 caracteres
-                     if (lexema.length() == 4) {
-                        // Insere a constante HEXA
-                        simb = tabela.insereConstante(lexema);
-                     }
+                     // Insere a constante HEXA
+                     simb = tabela.insereConstante(lexema, "HEXA");
                   } else {
-                     // Verifica se possui algum caracter nao numerico
-                     for (int i = 0; i < lexema.length(); i++) {
-                        if (!ehDigito(lexema.charAt(i))) {
-                           erroLexema();
-                        }
-                     }
-
-                     simb = tabela.insereConstante(lexema);
+                     //Numero comecado com 0 e com tamanho maior que 1
+                     simb = tabela.insereConstante(lexema, "NUMERICA");
                   }
 
                }
@@ -751,16 +740,14 @@ class AnalisadorLexico {
                   }
                }
 
-               simb = tabela.insereConstante(lexema);
+               simb = tabela.insereConstante(lexema, );
             }
-         } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
-            simb = tabela.insereConstante(lexema);
          } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
             String x = lexema.substring(0, lexema.length() - 1);
             x += "$";
             x += '"';
             lexema = x;
-            simb = tabela.insereConstante(lexema);
+            simb = tabela.insereConstante(lexema, "STRING");
          } else {
             erroLexema();
          }
@@ -850,24 +837,8 @@ class Simbolo {
       return lexema;
    }
 
-   public String getTipo() {
-      return tipo;
-   }
-
-   public void setTipo(String tipo) {
-      this.tipo = tipo;
-   }
-
    public void setToken(byte token) {
       this.token = token;
-   }
-
-   public int getEndereco() {
-      return endereco;
-   }
-
-   public void setEndereco(int endereco) {
-      this.endereco = endereco;
    }
 
 }
@@ -963,8 +934,8 @@ class TabelaDeSimbolos {
       return hash.get(lexema);
    }
 
-   public Simbolo insereConstante(String lexema) {
-      Simbolo simbolo = new Simbolo(CONSTANTE, lexema, ++endereco);
+   public Simbolo insereConstante(String lexema, String tipo) {
+      Simbolo simbolo = new Simbolo(CONSTANTE, lexema, ++endereco, tipo);
       hash.put(lexema, simbolo);
       return hash.get(lexema);
    }
