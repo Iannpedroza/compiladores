@@ -572,7 +572,7 @@ class AnalisadorSintatico {
       return simboloF;
 
    }
-
+/**/ 
    void checkEOF() {
       if (lexico.ehEOF) {
          System.err.println((lexico.linha + 1) + ":Fim de arquivo nao esperado.");
