@@ -330,21 +330,36 @@ class AnalisadorSintatico {
                C();
             }
 
-         } else if (simbolo.getToken() == tabela.IF) {
 
-            // REFAZER DEPOIS IANN
+         } else if (simbolo.getToken() == tabela.IF) { 
+
+            // C => if '(' E ')' (C [else (begin {C} endelse | C)]| C')
+            
             casaToken(tabela.IF);
             casaToken(tabela.ABREP);
             E();
             casaToken(tabela.FECHAP);
 
             if (ehComando()) {
+               C();
+               if(simbolo.getToken() == tabela.ELSE){
+                  casaToken(tabela.ELSE);
+                  if(simbolo.getToken() == tabela.BEGIN){
+                     casaToken(tabela.BEGIN);
+                     while(ehComando()){
+                        C();
+                     }
+                     casaToken(tabela.ENDELSE);
 
+                  }else{
+                     C();
+                  }
+               }
             } else{
-
+               //se for C'
+               C1();
             }
 
-            // casaToken(tabela.PV);
          } else if (simbolo.getToken() == tabela.PONTOVIRGULA) {
             casaToken(tabela.PONTOVIRGULA);
          } else if (simbolo.getToken() == tabela.READLN) {
@@ -379,50 +394,29 @@ class AnalisadorSintatico {
       }
    }
 
-   // C1 -> (begin {C} endif | C) [else (begin {C} endelse | C)]
+   //C' => (begin {C} endif) [else (begin {C} endelse | C)]
    void C1() {
       try {
          checkEOF();
-
-         if (simbolo.getToken() == tabela.BEGIN) {
-            casaToken(tabela.BEGIN);
-
-            while (ehComando()){
+         casaToken(tabela.BEGIN);
+         while(ehComando()){
+            C();
+         }
+         casaToken(tabela.ENDIF);
+         if(simbolo.getToken() == tabela.ELSE){
+            casaToken(tabela.ELSE);
+            if(simbolo.getToken() == tabela.BEGIN){
+               casaToken(tabela.BEGIN);
+               while(ehComando()){
+                  C();
+               }
+               casaToken(tabela.ENDELSE);   
+            }else{
                C();
             }
-
-            casaToken(tabela.ENDIF);
-            
-            if (simbolo != null && simbolo.getToken() == tabela.ELSE) { 
-               casaToken(tabela.ELSE);
-               
-               if (simbolo.getToken() == tabela.BEGIN) {
-                  casaToken(tabela.BEGIN);
-                  while (ehComando()){
-                     C();
-                  }
-               } else {
-                  C();
-               }
-   
-            }
-         } else {
-            C();
-
-            if (simbolo != null && simbolo.getToken() == tabela.ELSE) { 
-               casaToken(tabela.ELSE);
-               
-               if (simbolo.getToken() == tabela.BEGIN) {
-                  casaToken(tabela.BEGIN);
-                  while (ehComando()){
-                     C();
-                  }
-               } else {
-                  C();
-               }
-   
-            }
          }
+
+
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
