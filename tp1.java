@@ -52,6 +52,7 @@ class AnalisadorLexico {
             '"', '\'', '/', '!', '?', '>', '<', '=', '\n' };
 
     Simbolo analisaLex(Scanner s) throws Exception {
+
         int estadoAtual = estadoInicial;
         int estadoFinal = 1;
         lexema = "";
@@ -463,8 +464,8 @@ class TabelaDeSimbolos {
     public final byte WRITE = 4;
     public final byte READLN = 5;
     public final byte ELSE = 6;
-    public final byte APAR = 7; // (
-    public final byte FPAR = 8; // )
+    public final byte ABREP = 7; // (
+    public final byte FECHAP = 8; // )
     public final byte PONTOVIRGULA = 9;
     public final byte ATT = 10;
     public final byte OR = 11;
@@ -474,7 +475,7 @@ class TabelaDeSimbolos {
     public final byte MENORIG = 15;
     public final byte DIFF = 16;
     public final byte VIRGULA = 17;
-    public final byte SUM = 18;
+    public final byte SOMA = 18;
     public final byte SUB = 19;
     public final byte DIV = 20;
     public final byte MULT = 21;
@@ -492,7 +493,7 @@ class TabelaDeSimbolos {
     public final byte ENDELSE = 34;
     public final byte COMPARA = 35;
     public final byte ID = 36;
-    public final byte VALORCONST = 37;
+    public final byte CONSTANTE = 37;
 
     public TabelaDeSimbolos() {
         hash.put("if", new Simbolo(IF, "if", ++endereco));
@@ -513,7 +514,7 @@ class TabelaDeSimbolos {
         hash.put("<=", new Simbolo(MENORIG, "<=", ++endereco));
         hash.put("!=", new Simbolo(DIFF, "!=", ++endereco));
         hash.put(",", new Simbolo(VIRGULA, ",", ++endereco));
-        hash.put("+", new Simbolo(SUM, "+", ++endereco));
+        hash.put("+", new Simbolo(SOMA, "+", ++endereco));
         hash.put("-", new Simbolo(SUB, "-", ++endereco));
         hash.put("/", new Simbolo(DIV, "/", ++endereco));
         hash.put("*", new Simbolo(MULT, "*", ++endereco));
