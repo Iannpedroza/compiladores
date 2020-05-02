@@ -144,37 +144,26 @@ class AnalisadorSintatico {
                               casaToken(tabela.ID);
                               if(s.getToken() == tabela.ATT){
                                  casaToken(tabela.ATT);
-                                 if(s.getToken() == tabela.CONSTANTE){
-                                  CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO    
+                                 if(s.getToken() == tabela.CONSTANTE){ //VERIFICAR SE IDS PODEM SER ATRIBUIDAS TAMBEM ALEM DAS CONSTANTES
+                                    CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO    
                                  }
                                  else{
                                  //ERRO NAO ACHOU CONSTANTE DEPOIS DE ATRIBUIÇÃO
                                  }
+                             
                               }
-                           }
-                           else{
+                           }else{
                               //ERRO NAO ACHOU ID DEPOIS DA VIRGULA
-                           }
-                           else if(s.getToken() == tabela.PONTOVIRGULA){
-                              casaToken(tabela.PONTOVIRGULA);
-                           }
-                           else if(s.getToken() == tabela.ATT){
-                              casaToken(tabela.ATT);
-                              if(s.getToken() == tabela.CONSTANTE){
-                                 CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO    
-                              }
-                              else{
-                                 //ERRO NAO ACHOU CONSTANTE DEPOIS DE ATRIBUIÇÃO
-                              }
-                           }
-                           else{
-                              //ERROOO UMA VEZ QUE NA LISTA DE IDS CHEGOU ALGO QUE NÃO É ID DEPOIS DA VIRGULA
-                           }                  
+                           }   
+                                         
                         }
                      }
                      else if(s.getToken() == tabela.PONTOVIRGULA){
                         casaToken(tabela.PONTOVIRGULA);
                         //ACABA AQUI POIS DEPOIS DE ATRIBUIR HOUVE PONTO E VIRGULA
+                     }
+                     else{
+                        //ERRO NAO ACHOU VIRGULA NEM PONTO E VIRGULA
                      }
                   }
                   else{
@@ -182,31 +171,38 @@ class AnalisadorSintatico {
                   }
    
                }
-
                else if(s.getToken() == tabela.VIRGULA){
                   while(s.getToken() == tabela.VIRGULA){
                      casaToken(tabela.VIRGULA);
                      if(s.getToken() == tabela.ID ){
                         casaToken(tabela.ID);
-                     }
-                     else if(s.getToken() == tabela.PONTOVIRGULA){
-                        casaToken(tabela.PONTOVIRGULA);
-                     }
-                     else if(s.getToken() == tabela.ATT){
-                        casaToken(tabela.ATT);
-                        if(s.getToken() == tabela.CONSTANTE){
-                           CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO    
-                        }
-                        else{
+                        if(s.getToken() == tabela.ATT){
+                           casaToken(tabela.ATT);
+                           if(s.getToken() == tabela.CONSTANTE){ //VERIFICAR SE IDS PODEM SER ATRIBUIDAS TAMBEM ALEM DAS CONSTANTES
+                              CONST(); //METODO CONST VAI ANALISAR A ATRIBUIÇÃO QUE ESTA SENDO FEITA PARA CADA TIPO, POIS INT N PODE RECEBER STRING POR EXEMPLO    
+                           }
+                           else{
                            //ERRO NAO ACHOU CONSTANTE DEPOIS DE ATRIBUIÇÃO
+                           }
+                       
                         }
-                     }
-                     else{
-                        //ERROOO UMA VEZ QUE NA LISTA DE IDS CHEGOU ALGO QUE NÃO É ID DEPOIS DA VIRGULA
-                     }                  
+                     }else{
+                        //ERRO NAO ACHOU ID DEPOIS DA VIRGULA
+                     }   
+                                   
+                  }
+                  if(s.getToken() == tabela.PONTOVIRGULA){
+                     casaToken(tabela.PONTOVIRGULA);
+                     //FINALIZA A LISTA
+                  }
+                  else{
+                     //ERRO , NAO VEIO PONTO E VIRGULA PARA FINALZIAR A LISTA
                   }
                   
-               }   
+               }
+               else{
+                  //ERRO , NÃO TEM PONTO E VIRGULA, VIRGULA OU ATT
+               } 
               
 
             }
