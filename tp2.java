@@ -86,8 +86,7 @@ class AnalisadorSintatico {
       }
    }
 
-   // D -> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' =
-   // '"' string '"') ';'
+   // D -> (int | byte | boolean | string) id [<- CONST]  {,id [<- CONST]}  ';' |  final id (<- CONST) ';'
    void D() {
       Simbolo simboloEconst = new Simbolo();
       Simbolo simboloString = new Simbolo();
@@ -102,89 +101,51 @@ class AnalisadorSintatico {
             
             if(s.getToken() == tabela.INT){
                casaToken(tabela.INT); 
-            }
-            if(s.getToken() == tabela.BYTE){
+            } else if(s.getToken() == tabela.BYTE){
                casaToken(tabela.BYTE);
-            }
-            if(s.getToken() == tabela.BOOLEAN){
+            } else if(s.getToken() == tabela.BOOLEAN){
                casaToken(tabela.BOOLEAN);
-            }
-            if(s.getToken() == tabela.STRING){
+            } else {
                casaToken(tabela.STRING);
             }
             
+            casaToken(tabela.ID);
+            if (s.getToken() == tabela.ATT){
+               casaToken(tabela.ATT);
+               casaToken(tabela.CONSTANTE);
 
-            if(s.getToken() == tabela.ID ){
-               casaToken(tabela.ID);
-               if(s.getToken() == tabela.PONTOVIRGULA ){
-                  casaToken(tabela.PONTOVIRGULA);
-                  //JOAO FAZER OQUE? ACABOU? ACHOU O PONTO E VIRGULA
-               } 
-               else if(s.getToken() == tabela.ATT ||s.getToken() == tabela.VIRGULA  ) {
-                  while(s.getToken() == tabela.ATT ||s.getToken() == tabela.VIRGULA ){
-                     if(s.getToken() == tabela.ATT){
-                        casaToken(tabela.ATT);
-                        if(s.getToken() == tabela.CONSTANTE){
-                           casaToken(tabela.CONSTANTE);
-                        }else{
-                           //ERRO NAO ATRIBUI NENHUMA CONSTANTE
-                        }
-                        if(s.getToken() == tabela.ATT){
-                           //ERRO ,DEPOIS DE CONSTANTE VEIO ATRIBUIÇÃO
-                        }
-
-                     }else if(s.getToken() == tabela.VIRGULA){
-                        casaToken(tabela.VIRGULA);
-                        if(s.getToken() == tabela.ID){
-                           casaToken(tabela.ID);
-                        }else{
-                           //ERRO , DEPOIS DA VIRGULA SÓ PODE VIR ID
-                        }
-                     }
-                  }
-                  if(s.getToken() == tabela.PONTOVIRGULA){
-                     casaToken(tabela.PONTOVIRGULA);
-                  }
-                  else{
-                     //ERRO, NAO FINALIZADOU A LISTA DE IDS COM ;
+               while (s.getToken() == tabela.VIRGULA) {
+                  casaToken(tabela.VIRGULA);
+                  casaToken(tabela.ID);
+                  if (s.getToken() == tabela.ATT) {
+                     casaToken(tabela.ATT);
+                     casaToken(tabela.CONSTANTE);
                   }
                }
-              
+               casaToken(tabela.PONTOVIRGULA);
+            } else if (s.getToken() == tabela.VIRGULA){
+               while(s.getToken() == tabela.VIRGULA) {
+                  casaToken(tabela.VIRGULA);
+                  casaToken(tabela.ID);
+                  if (s.getToken() == tabela.ATT) {
+                     casaToken(tabela.ATT);
+                     casaToken(tabela.CONSTANTE);
+                  }
+               }
+               casaToken(tabela.PONTOVIRGULA);
+                  
 
-            }
-            else{
-               //ERRO PQ NAO ACHOU ID DPS DE INT,BYTE,BOOLEAN OU STRING
+            } else {
+               casaToken(tabela.PONTOVIRGULA);
             }
 
-         }else if(s.getToken() == tabela.FINAL){
+         }else {
             // se for 'final' ao invez de int,byte,boolean ou string
             casaToken(tabela.FINAL);
-            if(s.getToken() == tabela.ID){
-               casaToken(tabela.ID);
-               if(s.getToken() == tabela.ATT){
-                  casaToken(tebla.ATT);
-                  if(s.getToken() == tabela.CONSTANTE){
-                     casaToken(tabela.CONSTANTE);
-                     if(s.getToken() == tabela.PONTOVIRGULA){
-                        casaToken(tabela.PONTOVIRGULA);
-                     }
-                  }
-                  else{
-                     //ERRO, NAO VEIO CONSTANTE DEPOIS DE ATRIBUIÇÃO
-                  }
-               } 
-               else{
-                  //ERRO NAO VEIO ATRIBUIÇÃO DEPOIS DE ID QUE ERA A UNICA OPÇÃO POSSIVEL
-               }
-            }
-            else{
-               //ERRO , NÃO VEIO ID DEPOIS DE FINAL QUE É A UNICA OPÇÃO POSSIVEL
-            }
-         
-         }
-         else{
-            //ERRROOOOOU, NAO VEIO NADA DE DECLARAÇÃO
-         }   
+            casaToken(tabela.ID);
+            casaToken(tabela.ATT);
+            casaToken(tabela.CONSTANTE);
+         }  
 
       }catch(Exception e){} // FIM TRY
 
