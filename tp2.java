@@ -379,7 +379,7 @@ class AnalisadorSintatico {
          } else {
             casaToken(tabela.ID);
          }
-
+      //*//
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
@@ -392,7 +392,7 @@ class AnalisadorSintatico {
          System.exit(0);
       }
    }
-
+   
    void tokenInesperado() {
       System.err.println((lexico.linha + 1) + ":Token nao esperado: " + simbolo.getLexema());
       System.exit(0);
