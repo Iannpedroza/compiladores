@@ -65,16 +65,25 @@ class AnalisadorSintatico {
    void S() {
       try {
          if (simbolo != null) {
-            while (ehDeclaracao()) {
-               checkEOF();
-               D();
+            boolean erro = true;
+            if (ehDeclaracao()) {
+               erro = false;
+               while (ehDeclaracao()) {
+                  checkEOF();
+                  D();
+               }
             }
+            if (ehComando()){
+               erro = false;
+               while (ehComando()) {
+                  checkEOF();
+                  C();
+               }
+            } 
 
-            while (ehComando()) {
-               checkEOF();
-               C();
+            if (erro) {
+               tokenInesperado();
             }
-
          }
       } catch (Exception e) {
          checkEOF();
@@ -103,14 +112,26 @@ class AnalisadorSintatico {
             casaToken(tabela.ID);
             if (simbolo.getToken() == tabela.ATT) {
                casaToken(tabela.ATT);
-               casaToken(tabela.CONSTANTE);
+               if (simbolo.getToken() == tabela.CONSTANTE){
+                  casaToken(tabela.CONSTANTE);
+               } else if (simbolo.getToken() == tabela.TRUE) {
+                  casaToken(tabela.TRUE);
+               }else {
+                  casaToken(tabela.FALSE);
+               }
 
                while (simbolo.getToken() == tabela.VIRGULA) {
                   casaToken(tabela.VIRGULA);
                   casaToken(tabela.ID);
                   if (simbolo.getToken() == tabela.ATT) {
                      casaToken(tabela.ATT);
-                     casaToken(tabela.CONSTANTE);
+                     if (simbolo.getToken() == tabela.CONSTANTE){
+                        casaToken(tabela.CONSTANTE);
+                     } else if (simbolo.getToken() == tabela.TRUE) {
+                        casaToken(tabela.TRUE);
+                     }else {
+                        casaToken(tabela.FALSE);
+                     }
                   }
                }
                casaToken(tabela.PONTOVIRGULA);
@@ -120,7 +141,13 @@ class AnalisadorSintatico {
                   casaToken(tabela.ID);
                   if (simbolo.getToken() == tabela.ATT) {
                      casaToken(tabela.ATT);
-                     casaToken(tabela.CONSTANTE);
+                     if (simbolo.getToken() == tabela.CONSTANTE){
+                        casaToken(tabela.CONSTANTE);
+                     } else if (simbolo.getToken() == tabela.TRUE) {
+                        casaToken(tabela.TRUE);
+                     }else {
+                        casaToken(tabela.FALSE);
+                     }
                   }
                }
                casaToken(tabela.PONTOVIRGULA);
@@ -134,7 +161,14 @@ class AnalisadorSintatico {
             casaToken(tabela.FINAL);
             casaToken(tabela.ID);
             casaToken(tabela.ATT);
-            casaToken(tabela.CONSTANTE);
+            if (simbolo.getToken() == tabela.CONSTANTE){
+               casaToken(tabela.CONSTANTE);
+            } else if (simbolo.getToken() == tabela.TRUE) {
+               casaToken(tabela.TRUE);
+            }else {
+               casaToken(tabela.FALSE);
+            }
+            
          }
 
       } catch (Exception e) {
@@ -376,6 +410,10 @@ class AnalisadorSintatico {
          } else if (simbolo.getToken() == tabela.CONSTANTE) {
             casaToken(tabela.CONSTANTE);
 
+         } else if (simbolo.getToken() == tabela.TRUE){
+            casaToken(tabela.TRUE);
+         } else if (simbolo.getToken() == tabela.FALSE) {
+            casaToken(tabela.FALSE);
          } else {
             casaToken(tabela.ID);
          }
@@ -394,7 +432,7 @@ class AnalisadorSintatico {
    }
    
    void tokenInesperado() {
-      System.err.println((lexico.linha + 1) + ":Token nao esperado: " + simbolo.getLexema());
+      System.err.print((lexico.linha + 1) + "\ntoken nao esperado [" + simbolo.getLexema() + "].");
       System.exit(0);
    }
 
